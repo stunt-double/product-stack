@@ -1,16 +1,16 @@
 # Product Stack
 
- Here's an overview of the tools and services we love.
+Here's an overview of the tools and services we love.
+
+![Alt](https://repobeats.axiom.co/api/embed/a17878ddc109157f729b6faad269b9514ee84c80.svg "Repobeats analytics image")
 
 ## Daily drivers:
 - **[Cursor](https://cursor.sh/)**: An AI first code editor to rapidly build with prompts. We use `.cursorrules` to futher improve performance: [our template](/engineering/.cursorrules)
-- Claude for teams
-- **[Figma Slides](https://www.figma.com/slides/)**: Seamless realtime collaboration with beautiful templates and integrated design system
 - **[Linear](https://linear.app/)**: For tasks, planning, and prioritisation
 - **[Arc](https://arc.net/)**: A modern, customizable browser with built-in productivity features like Spaces and Boosts
 - **[1Password](https://1password.com/)**: Secure notes, passwords, and certificates
-- AirTable 
-- Raycast
+- **[Raycast](https://www.raycast.com/)**: Productivity tool for streamlined workflows and quick actions.
+- Attio: CRM
 - **[Homebrew]**: Mac OS Package manager
 
 ## Engineering
@@ -19,30 +19,27 @@
 - **[Vercel](https://vercel.com/)**: Toolbar and previews are 👌
 - **[Supabase](https://supabase.com/)**: Our backend-as-a-service platform, providing database, authentication, and real-time capabilities.
 - **[Trigger.dev](https://trigger.dev/)**: For managing and orchestrating background jobs and workflows (and great people too)
-- **[Caddy](https://caddyserver.com/)**: Local SSL and reverse proxy
 - **[iTerm 2](https://iterm2.com/)**: Powerful terminal
 
 
 ## Design
 
-- **[NextUI](https://nextui.org/)**: A beautiful, customizable component library for rapid UI development. 
+- **[shadcn/ui](https://ui.shadcn.com/)**: Beautiful components based on radix ui
 - **[Tailwind CSS](https://tailwindcss.com/)**: For utility-first styling and responsive design.
-- **[ITF](https://indiantypefoundry.com)**: Fonts
-- **[Recraft](https://recraft.ai)**: Generate vector and bitmap assets 
-- **[Productlane](https://productlane.com/)**: Gather insights to evidence and prioritise 
-- **Framer**: Stunning websites  
+- **[Klim](https://klim.co.nz)**: Fonts
+- **[Figma Design/Slides/Sites/Make](https://www.figma.com)**: Seamless realtime collaboration with beautiful templates and integrated design system
+- Rotato: Product mockups with video
 
+  
 ## AI and Machine Learning
 
-- **[Lytix](https://lytix.ai/)**: Single endpoint and optimisation for multiple LLM providers (👀 these folks are building fast, big things to come)
-- **[Jan](https://jan.ai/)**: A local AI application for enhanced development workflows.
-
+- **[Helicone](https://Helicone.ai/)**: Single endpoint and optimisation for multiple LLM providers
+- **[LM Studio](https://lmstudio.ai/)**: A local AI application for enhanced development workflows.
+- Claude Desktop
 
 ## Staying organised
-
-- Supernormal
 - BusyCal
-- Reclaim 
+- Reclaim.ai
 
 ## Hybrid working/collaboration 
 
@@ -50,9 +47,8 @@
 - Slack
 
 ## Productivity 
-
-- **[Raycast](https://www.raycast.com/)**: Productivity tool for streamlined workflows and quick actions.
 - Bartender
+- Better Display Tool
 - Apple Notes
 
 
