@@ -1,22 +1,51 @@
 # Product Stack
 
+<p align="center">
+  <img src="assets/hero.svg" alt="Product Stack: the tools, services, models and integrations behind Stunt Double" width="100%">
+</p>
+
 An overview of the tools, services, AI tooling and integrations we use to build and run [Stunt Double](https://stuntdouble.io).
 
-![Alt](https://repobeats.axiom.co/api/embed/a17878ddc109157f729b6faad269b9514ee84c80.svg "Repobeats analytics image")
+<p align="center"><sub><a href="#daily-drivers">Daily Drivers</a> · <a href="#engineering">Engineering</a> · <a href="#design">Design</a> · <a href="#llm-models">LLM Models</a> · <a href="#ai-and-agents">AI and Agents</a> · <a href="#claude-code-setup">Claude Code Setup</a> · <a href="#open-source">Open Source</a> · <a href="#payments-and-email">Payments and Email</a> · <a href="#observability">Observability</a> · <a href="#security-and-networking">Security and Networking</a> · <a href="#productivity">Productivity</a></sub></p>
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
 
 ## Daily Drivers
+
+<p>
+  <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-D97757?style=for-the-badge&logo=claude&logoColor=white">
+  <img alt="Cursor" src="https://img.shields.io/badge/Cursor-000000?style=for-the-badge&logo=cursor&logoColor=white">
+  <img alt="Linear" src="https://img.shields.io/badge/Linear-5E6AD2?style=for-the-badge&logo=linear&logoColor=white">
+  <img alt="1Password" src="https://img.shields.io/badge/1Password-3B66BC?style=for-the-badge&logo=1password&logoColor=white">
+  <img alt="Raycast" src="https://img.shields.io/badge/Raycast-FF6363?style=for-the-badge&logo=raycast&logoColor=white">
+  <img alt="Homebrew" src="https://img.shields.io/badge/Homebrew-FBB040?style=for-the-badge&logo=homebrew&logoColor=white">
+</p>
 
 - **[Claude Code](https://claude.ai/code)**: Agentic development in the terminal, desktop app, web and cloud sessions
 - **[Claude](https://claude.ai/)**: Desktop and web assistant, connected to our tools via MCP connectors
 - **[Cursor](https://cursor.sh/)**: In-editor prompting
-- **[Arc](https://arc.net/)**: Browser with Spaces and Boosts
+- **[Dia](https://www.diabrowser.com/)**: AI browser
 - **[Linear](https://linear.app/)**: Issues, projects, cycles and triage
 - **[Slack](https://slack.com/)**: Team communication
 - **[1Password](https://1password.com/)**: Passwords, secrets and certificates
 - **[Raycast](https://www.raycast.com/)**: Launcher and productivity workflows
 - **[Homebrew](https://brew.sh/)**: macOS package manager
 
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
+
 ## Engineering
+
+<p>
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white">
+  <img alt="Nx" src="https://img.shields.io/badge/Nx-143055?style=for-the-badge&logo=nx&logoColor=white">
+  <img alt="pnpm" src="https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white">
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white">
+  <img alt="Supabase" src="https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
+  <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare%20Workers-F38020?style=for-the-badge&logo=cloudflareworkers&logoColor=white">
+  <img alt="Tauri" src="https://img.shields.io/badge/Tauri-24C8D8?style=for-the-badge&logo=tauri&logoColor=white">
+  <img alt="Swift" src="https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=swift&logoColor=white">
+</p>
 
 - **[TypeScript](https://www.typescriptlang.org/)**: One language across the full stack (TypeScript 6 and the native TypeScript 7 compiler)
 - **[Next.js 16](https://nextjs.org/)**: App Router, Server Components, Turbopack and React 19
@@ -24,7 +53,6 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[pnpm](https://pnpm.io/)**: Package manager (Node 22+)
 - **[Vercel](https://vercel.com/)**: Hosting, preview deployments, Sandbox, OIDC, toolbar and BotID
 - **[Supabase](https://supabase.com/)**: Postgres, auth, storage, realtime and preview branches per PR
-- **[Upstash Redis](https://upstash.com/)**: Caching and rate limiting
 - **[Trigger.dev v4](https://trigger.dev/)**: Background jobs, agent runs and orchestration
 - **[Cloudflare Workers](https://workers.cloudflare.com/)**: Edge compute for inbound email and a Workers-hosted browser agent (Agents SDK, Workers AI, Browser Rendering)
 - **[Tauri 2](https://tauri.app/)**: Native macOS desktop app
@@ -35,7 +63,17 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[Changesets](https://github.com/changesets/changesets)** + **[tsup](https://tsup.egoist.dev/)**: Versioning and builds for our open source packages
 - **[GitHub](https://github.com/)**: Source control, Actions and the GitHub Packages registry
 
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
+
 ## Design
+
+<p>
+  <img alt="Figma" src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">
+  <img alt="shadcn/ui" src="https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white">
+  <img alt="Radix UI" src="https://img.shields.io/badge/Radix%20UI-161618?style=for-the-badge&logo=radixui&logoColor=white">
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
+  <img alt="Three.js" src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=threedotjs&logoColor=white">
+</p>
 
 - **[Figma](https://www.figma.com/)**: Design, slides, prototyping, design system and Code Connect
 - **[shadcn/ui](https://ui.shadcn.com/)** + **[Radix UI](https://www.radix-ui.com/)**: Component foundations for our `@stuntdouble/ui` design system
@@ -44,26 +82,67 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[React Spring](https://www.react-spring.dev/)**: Animation
 - **[Three.js](https://threejs.org/)** + **[Paper Shaders](https://shaders.paper.design/)**: Shaders and visual effects
 - **[React Flow](https://reactflow.dev/)**: Node-based workflow and diagram editors
-- **[Mermaid](https://mermaid.js.org/)**: Diagrams
 - **[Klim](https://klim.co.nz/)**: Fonts
 - **Continuity icons**: Our in-house icon pack ([`@stunt-double/icons`](https://github.com/stunt-double/stuntkit))
-- **Rotato**: Product mockups and video
+- **[Rotato](https://rotato.app/)**: Product mockups and video
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
+
+## LLM Models
+
+<p>
+  <img alt="Claude" src="https://img.shields.io/badge/Claude-D97757?style=for-the-badge&logo=anthropic&logoColor=white">
+  <img alt="Vertex AI" src="https://img.shields.io/badge/Vertex%20AI-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white">
+  <img alt="Gemini" src="https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white">
+  <img alt="Workers AI" src="https://img.shields.io/badge/Workers%20AI-F38020?style=for-the-badge&logo=cloudflare&logoColor=white">
+  <img alt="LM Studio" src="https://img.shields.io/badge/LM%20Studio-4338CA?style=for-the-badge&logo=lmstudio&logoColor=white">
+  <img alt="Qwen" src="https://img.shields.io/badge/Qwen-615CED?style=for-the-badge&logo=qwen&logoColor=white">
+</p>
+
+### Cloud
+
+- **[Anthropic Claude](https://www.anthropic.com/)**: Primary model family (Opus, Sonnet and Haiku) via the Anthropic API and Vertex AI
+- **[Google Vertex AI](https://cloud.google.com/vertex-ai)**: Claude and Gemini via Google Cloud
+- **[OpenAI](https://openai.com/)**: Embeddings and supporting models
+- **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)**: Open models at the edge
+
+### Local
+
+- **[LM Studio](https://lmstudio.ai/)**: Running and serving models locally
+- **laya-mlx**: MLX model on Apple silicon
+- **[Qwen](https://qwen.ai/)**: Open-weight models from Alibaba
+- **[Gemma](https://ai.google.dev/gemma)**: Open-weight models from Google
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
 
 ## AI and Agents
 
-- **[Anthropic Claude](https://www.anthropic.com/)**: Primary model family via the Anthropic SDK, Vertex AI and the [Claude Agent SDK](https://docs.claude.com/en/docs/agent-sdk/overview)
+<p>
+  <img alt="Claude Agent SDK" src="https://img.shields.io/badge/Claude%20Agent%20SDK-D97757?style=for-the-badge&logo=claude&logoColor=white">
+  <img alt="Vercel AI SDK" src="https://img.shields.io/badge/Vercel%20AI%20SDK-000000?style=for-the-badge&logo=vercel&logoColor=white">
+  <img alt="Puppeteer" src="https://img.shields.io/badge/Puppeteer-40B5A4?style=for-the-badge&logo=puppeteer&logoColor=white">
+  <img alt="MCP" src="https://img.shields.io/badge/MCP-000000?style=for-the-badge&logo=modelcontextprotocol&logoColor=white">
+</p>
+
+- **[Claude Agent SDK](https://docs.claude.com/en/docs/agent-sdk/overview)**: Building agents on Claude
 - **[Vercel AI SDK v7](https://ai-sdk.dev/)**: Unified interface across Anthropic, OpenAI, Google and Vertex, with MCP and OpenTelemetry support
-- **[Google Vertex AI](https://cloud.google.com/vertex-ai)**: Claude and Gemini via Google Cloud
-- **[OpenAI](https://openai.com/)**: Embeddings and supporting models
-- **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)**: Models at the edge
 - **[Browserbase](https://www.browserbase.com/)** + **[Stagehand v4](https://stagehand.dev/)**: Browser infrastructure for our AI actors
 - **[Puppeteer](https://pptr.dev/)** + **[Cloudflare Browser Rendering](https://developers.cloudflare.com/browser-rendering/)**: Browser drivers
 - **[Tavily](https://tavily.com/)**: Web search for agents
-- **[Cline Agents](https://github.com/cline/cline)**: Agent runtime experiments
 - **[MCP](https://modelcontextprotocol.io/)**: Our own remote MCP server (OAuth 2.1, also shipped as an MCPB bundle), plus customer-supplied MCP servers for actors during runs
 - **[Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)**: Published from our site at `/.well-known/agent-skills` and in [stuntkit](https://github.com/stunt-double/stuntkit)
 
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
+
 ## Claude Code Setup
+
+<p>
+  <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-D97757?style=for-the-badge&logo=claude&logoColor=white">
+  <img alt="GitHub" src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+  <img alt="Linear" src="https://img.shields.io/badge/Linear-5E6AD2?style=for-the-badge&logo=linear&logoColor=white">
+  <img alt="Supabase" src="https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
+  <img alt="Figma" src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">
+</p>
 
 ### MCP connectors
 
@@ -83,8 +162,6 @@ Connected to Claude Code and Claude across the team:
 | **Resend** | Email, broadcasts, templates and inboxes |
 | **Slack** | Messages, threads and canvases |
 | **Attio** | CRM, notes, meetings and pipeline |
-| **Opinly** | SEO, AI search visibility and blog publishing |
-| **Vibe Prospecting** | Company and contact enrichment |
 | **Gmail**, **Google Calendar**, **Google Drive** | Email, scheduling and files |
 
 ### Skills
@@ -95,15 +172,13 @@ Connected to Claude Code and Claude across the team:
 - **Stunt Double skills**: `stunt-double` (`npx skills add stunt-double/stuntdouble-mcp`), plus `stunt-double-wao`, `stunt-double-browser-toolset` and `stunt-double-spelling` in [stuntkit](https://github.com/stunt-double/stuntkit)
 - **Built in**: `/code-review`, `/security-review`, `/simplify`, `/init`, `/loop` and `/run`
 
-### Working agreements
-
-- `CLAUDE.md` at the repo root (and per app where needed) documents the monorepo, conventions and agents
-- Linear-style branch names: `feature/PRO-[ID]-[title]`
-- Cloud sessions open PRs and watch CI; Vercel previews and Supabase preview branches are created per PR
-- Supabase `database.ts` is generated, never hand-edited
-- See [`engineering/.cursorrules`](engineering/.cursorrules) for code conventions
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
 
 ## Open Source
+
+<p>
+  <img alt="stuntkit" src="https://img.shields.io/badge/stuntkit-181717?style=for-the-badge&logo=github&logoColor=white">
+</p>
 
 - **[stuntkit](https://github.com/stunt-double/stuntkit)**: Our open source packages
   - `@stunt-double/browser-toolset`: Browser tools for AI agents over a provider-neutral driver, including an executor for Anthropic's browser-use toolset
@@ -111,7 +186,14 @@ Connected to Claude Code and Claude across the team:
   - `@stunt-double/spelling`: US, UK and Canadian spelling localisation
   - `@stunt-double/icons`: The Continuity icon pack
 
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
+
 ## Payments and Email
+
+<p>
+  <img alt="Stripe" src="https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&logo=stripe&logoColor=white">
+  <img alt="Resend" src="https://img.shields.io/badge/Resend-000000?style=for-the-badge&logo=resend&logoColor=white">
+</p>
 
 - **[Stripe](https://stripe.com/)**: Payments and subscriptions
 - **[Resend](https://resend.com/)**: Transactional and marketing email
@@ -120,36 +202,40 @@ Connected to Claude Code and Claude across the team:
 - **[postal-mime](https://github.com/postalsys/postal-mime)**: Inbound email parsing on Workers
 - **Web Push**: Browser and iOS notifications
 
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
+
 ## Observability
+
+<p>
+  <img alt="Vercel Analytics" src="https://img.shields.io/badge/Vercel%20Analytics-000000?style=for-the-badge&logo=vercel&logoColor=white">
+  <img alt="OpenTelemetry" src="https://img.shields.io/badge/OpenTelemetry-425CC7?style=for-the-badge&logo=opentelemetry&logoColor=white">
+</p>
 
 - **[Vercel Analytics](https://vercel.com/analytics)**: Web analytics
 - **[Vercel Speed Insights](https://vercel.com/docs/speed-insights)**: Core Web Vitals
 - **[Vercel Flags](https://vercel.com/docs/feature-flags)**: Feature flags via the Flags SDK
 - **[OpenTelemetry](https://opentelemetry.io/)**: Tracing via `@vercel/otel` and AI SDK telemetry
 - **[rrweb](https://www.rrweb.io/)**: Session recording and replay of actor runs
-- **[Pino](https://getpino.io/)**: Structured logging
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
 
 ## Security and Networking
+
+<p>
+  <img alt="Cloudflare Zero Trust" src="https://img.shields.io/badge/Cloudflare%20Zero%20Trust-F38020?style=for-the-badge&logo=cloudflare&logoColor=white">
+  <img alt="Supabase Auth" src="https://img.shields.io/badge/Supabase%20Auth-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
+</p>
 
 - **[Cloudflare Zero Trust](https://www.cloudflare.com/zero-trust/)**: Domain access and private VPN (free up to 50 users)
 - **[Supabase Auth](https://supabase.com/auth)**: Google, Apple and magic link sign-in
 - **[Vercel BotID](https://vercel.com/docs/botid)**: Bot protection
 - **OAuth 2.1 + PKCE**: For our MCP server and agent connections
 
-## Growth and Sales
-
-- **[Attio](https://attio.com/)**: CRM
-- **[Opinly](https://opinly.ai/)**: Content, SEO and AI search visibility
-- **[Vibe Prospecting](https://www.explorium.ai/)**: Prospecting and enrichment
-
-## Operations
-
-- **Google Workspace**: Email, calendar and drive
-- **BusyCal**: Calendar
-- **Reclaim.ai**: Smart scheduling
+<p align="center"><img src="assets/divider.svg" alt="" width="100%"></p>
 
 ## Productivity
 
 - **Apple Notes**
 - **Bartender**
 - **Better Display**
+- **Vorssaint**
