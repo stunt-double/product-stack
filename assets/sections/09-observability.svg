@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="44" viewBox="0 0 1200 44" role="img" aria-label="09 Observability">
+  <line x1="0" y1="10" x2="1200" y2="10" stroke="#9299A1" stroke-opacity="0.45"/>
+  <g font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" letter-spacing="2">
+    <text x="0" y="36" fill="#4564D0">09</text>
+    <text x="1200" y="36" text-anchor="end" fill="#9299A1">OBSERVABILITY</text>
+  </g>
+</svg>
