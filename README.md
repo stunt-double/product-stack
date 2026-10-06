@@ -9,7 +9,7 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[Claude Code](https://claude.ai/code)**: Agentic development in the terminal, desktop app, web and cloud sessions
 - **[Claude](https://claude.ai/)**: Desktop and web assistant, connected to our tools via MCP connectors
 - **[Cursor](https://cursor.sh/)**: In-editor prompting
-- **[Arc](https://arc.net/)**: Browser with Spaces and Boosts
+- **[Dia](https://www.diabrowser.com/)**: AI browser
 - **[Linear](https://linear.app/)**: Issues, projects, cycles and triage
 - **[Slack](https://slack.com/)**: Team communication
 - **[1Password](https://1password.com/)**: Passwords, secrets and certificates
@@ -24,7 +24,6 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[pnpm](https://pnpm.io/)**: Package manager (Node 22+)
 - **[Vercel](https://vercel.com/)**: Hosting, preview deployments, Sandbox, OIDC, toolbar and BotID
 - **[Supabase](https://supabase.com/)**: Postgres, auth, storage, realtime and preview branches per PR
-- **[Upstash Redis](https://upstash.com/)**: Caching and rate limiting
 - **[Trigger.dev v4](https://trigger.dev/)**: Background jobs, agent runs and orchestration
 - **[Cloudflare Workers](https://workers.cloudflare.com/)**: Edge compute for inbound email and a Workers-hosted browser agent (Agents SDK, Workers AI, Browser Rendering)
 - **[Tauri 2](https://tauri.app/)**: Native macOS desktop app
@@ -44,10 +43,9 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[React Spring](https://www.react-spring.dev/)**: Animation
 - **[Three.js](https://threejs.org/)** + **[Paper Shaders](https://shaders.paper.design/)**: Shaders and visual effects
 - **[React Flow](https://reactflow.dev/)**: Node-based workflow and diagram editors
-- **[Mermaid](https://mermaid.js.org/)**: Diagrams
 - **[Klim](https://klim.co.nz/)**: Fonts
 - **Continuity icons**: Our in-house icon pack ([`@stunt-double/icons`](https://github.com/stunt-double/stuntkit))
-- **Rotato**: Product mockups and video
+- **[Rotato](https://rotato.app/)**: Product mockups and video
 
 ## AI and Agents
 
@@ -59,7 +57,6 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[Browserbase](https://www.browserbase.com/)** + **[Stagehand v4](https://stagehand.dev/)**: Browser infrastructure for our AI actors
 - **[Puppeteer](https://pptr.dev/)** + **[Cloudflare Browser Rendering](https://developers.cloudflare.com/browser-rendering/)**: Browser drivers
 - **[Tavily](https://tavily.com/)**: Web search for agents
-- **[Cline Agents](https://github.com/cline/cline)**: Agent runtime experiments
 - **[MCP](https://modelcontextprotocol.io/)**: Our own remote MCP server (OAuth 2.1, also shipped as an MCPB bundle), plus customer-supplied MCP servers for actors during runs
 - **[Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)**: Published from our site at `/.well-known/agent-skills` and in [stuntkit](https://github.com/stunt-double/stuntkit)
 
@@ -83,8 +80,6 @@ Connected to Claude Code and Claude across the team:
 | **Resend** | Email, broadcasts, templates and inboxes |
 | **Slack** | Messages, threads and canvases |
 | **Attio** | CRM, notes, meetings and pipeline |
-| **Opinly** | SEO, AI search visibility and blog publishing |
-| **Vibe Prospecting** | Company and contact enrichment |
 | **Gmail**, **Google Calendar**, **Google Drive** | Email, scheduling and files |
 
 ### Skills
@@ -94,14 +89,6 @@ Connected to Claude Code and Claude across the team:
 - **Supabase agent skills**: `npx skills add supabase/agent-skills`
 - **Stunt Double skills**: `stunt-double` (`npx skills add stunt-double/stuntdouble-mcp`), plus `stunt-double-wao`, `stunt-double-browser-toolset` and `stunt-double-spelling` in [stuntkit](https://github.com/stunt-double/stuntkit)
 - **Built in**: `/code-review`, `/security-review`, `/simplify`, `/init`, `/loop` and `/run`
-
-### Working agreements
-
-- `CLAUDE.md` at the repo root (and per app where needed) documents the monorepo, conventions and agents
-- Linear-style branch names: `feature/PRO-[ID]-[title]`
-- Cloud sessions open PRs and watch CI; Vercel previews and Supabase preview branches are created per PR
-- Supabase `database.ts` is generated, never hand-edited
-- See [`engineering/.cursorrules`](engineering/.cursorrules) for code conventions
 
 ## Open Source
 
@@ -127,7 +114,6 @@ Connected to Claude Code and Claude across the team:
 - **[Vercel Flags](https://vercel.com/docs/feature-flags)**: Feature flags via the Flags SDK
 - **[OpenTelemetry](https://opentelemetry.io/)**: Tracing via `@vercel/otel` and AI SDK telemetry
 - **[rrweb](https://www.rrweb.io/)**: Session recording and replay of actor runs
-- **[Pino](https://getpino.io/)**: Structured logging
 
 ## Security and Networking
 
@@ -136,20 +122,9 @@ Connected to Claude Code and Claude across the team:
 - **[Vercel BotID](https://vercel.com/docs/botid)**: Bot protection
 - **OAuth 2.1 + PKCE**: For our MCP server and agent connections
 
-## Growth and Sales
-
-- **[Attio](https://attio.com/)**: CRM
-- **[Opinly](https://opinly.ai/)**: Content, SEO and AI search visibility
-- **[Vibe Prospecting](https://www.explorium.ai/)**: Prospecting and enrichment
-
-## Operations
-
-- **Google Workspace**: Email, calendar and drive
-- **BusyCal**: Calendar
-- **Reclaim.ai**: Smart scheduling
-
 ## Productivity
 
 - **Apple Notes**
 - **Bartender**
 - **Better Display**
+- **Vorssaint**
