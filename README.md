@@ -2,8 +2,6 @@
 
 An overview of the tools, services, AI tooling and integrations we use to build and run [Stunt Double](https://stuntdouble.io).
 
-![Alt](https://repobeats.axiom.co/api/embed/a17878ddc109157f729b6faad269b9514ee84c80.svg "Repobeats analytics image")
-
 ## Daily Drivers
 
 - **[Claude Code](https://claude.ai/code)**: Agentic development in the terminal, desktop app, web and cloud sessions
