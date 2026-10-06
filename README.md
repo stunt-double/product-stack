@@ -47,13 +47,26 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **Continuity icons**: Our in-house icon pack ([`@stunt-double/icons`](https://github.com/stunt-double/stuntkit))
 - **[Rotato](https://rotato.app/)**: Product mockups and video
 
-## AI and Agents
+## LLM Models
 
-- **[Anthropic Claude](https://www.anthropic.com/)**: Primary model family via the Anthropic SDK, Vertex AI and the [Claude Agent SDK](https://docs.claude.com/en/docs/agent-sdk/overview)
-- **[Vercel AI SDK v7](https://ai-sdk.dev/)**: Unified interface across Anthropic, OpenAI, Google and Vertex, with MCP and OpenTelemetry support
+### Cloud
+
+- **[Anthropic Claude](https://www.anthropic.com/)**: Primary model family (Opus, Sonnet and Haiku) via the Anthropic API and Vertex AI
 - **[Google Vertex AI](https://cloud.google.com/vertex-ai)**: Claude and Gemini via Google Cloud
 - **[OpenAI](https://openai.com/)**: Embeddings and supporting models
-- **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)**: Models at the edge
+- **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)**: Open models at the edge
+
+### Local
+
+- **[LM Studio](https://lmstudio.ai/)**: Running and serving models locally
+- **laya-mlx**: MLX model on Apple silicon
+- **[Qwen](https://qwen.ai/)**: Open-weight models from Alibaba
+- **[Gemma](https://ai.google.dev/gemma)**: Open-weight models from Google
+
+## AI and Agents
+
+- **[Claude Agent SDK](https://docs.claude.com/en/docs/agent-sdk/overview)**: Building agents on Claude
+- **[Vercel AI SDK v7](https://ai-sdk.dev/)**: Unified interface across Anthropic, OpenAI, Google and Vertex, with MCP and OpenTelemetry support
 - **[Browserbase](https://www.browserbase.com/)** + **[Stagehand v4](https://stagehand.dev/)**: Browser infrastructure for our AI actors
 - **[Puppeteer](https://pptr.dev/)** + **[Cloudflare Browser Rendering](https://developers.cloudflare.com/browser-rendering/)**: Browser drivers
 - **[Tavily](https://tavily.com/)**: Web search for agents
