@@ -86,8 +86,6 @@ Connected to Claude Code and Claude across the team:
 | **Opinly** | SEO, AI search visibility and blog publishing |
 | **Vibe Prospecting** | Company and contact enrichment |
 | **Gmail**, **Google Calendar**, **Google Drive** | Email, scheduling and files |
-| **Xero** | Accounting and financial reports |
-| **Airwallex** | Business accounts, cards and billing |
 
 ### Skills
 
@@ -146,8 +144,6 @@ Connected to Claude Code and Claude across the team:
 
 ## Operations
 
-- **[Xero](https://www.xero.com/)**: Accounting
-- **[Airwallex](https://www.airwallex.com/)**: Business accounts, cards and FX
 - **Google Workspace**: Email, calendar and drive
 - **BusyCal**: Calendar
 - **Reclaim.ai**: Smart scheduling
