@@ -1,5 +1,7 @@
 # switchboard
 
+![switchboard](assets/switchboard.webp)
+
 A Claude Code mod (function hooks plugin).
 
 ## Loading it
