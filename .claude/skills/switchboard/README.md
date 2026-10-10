@@ -2,6 +2,10 @@
 
 A Claude Code mod (function hooks plugin).
 
+<p align="center">
+  <img src="assets/switchboard-demo.gif" alt="Switchboard demo" width="100%">
+</p>
+
 ## Loading it
 
 Claude Code only runs plugin code from a repo once a person has opted in, so how it loads depends on the session:
