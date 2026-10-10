@@ -62,6 +62,9 @@ const INJECTED_DOORS = new Set([
 
 const PEER_KINDS = new Set(['peer', 'coordinator', 'peer-send-message']);
 
+// A person's own prompt: typed at the terminal, sent from the Claude app (Remote Control), or `claude -p` / the Agent SDK.
+const PERSON_KINDS = new Set(['composer', 'bridge', 'sdk']);
+
 // Local laya-mlx first (~10ms, free); Haiku when laya is not connected, errors or is unsure.
 async function layaTier($: EngineInterface, text: string): Promise<SwitchboardTier | null> {
   try {
@@ -152,7 +155,7 @@ export const register: Register = (on) => {
 
   // Model selection triage: classify each typed prompt, then route the turn's requests.
   on('prompt.submit', async ($, e, next) => {
-    if (e.origin.kind !== 'composer' || e.text.startsWith('/')) return next(e);
+    if (!PERSON_KINDS.has(e.origin.kind) || e.text.startsWith('/')) return next(e);
 
     const pin = await read($, pinned);
     let picked: SwitchboardTier | null = pin;

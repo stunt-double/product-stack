@@ -1,0 +1,11 @@
+{
+  "name": "product-stack",
+  "owner": { "name": "Stunt Double" },
+  "plugins": [
+    {
+      "name": "switchboard",
+      "source": "./.claude/skills/switchboard",
+      "description": "Peer session inbox and /send, a status band above the prompt, and per-prompt model triage."
+    }
+  ]
+}
