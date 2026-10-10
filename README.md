@@ -18,6 +18,8 @@ An overview of the tools, services, AI tooling and integrations we use to build 
   <img alt="Linear" src="https://img.shields.io/badge/Linear-0E1119?style=flat-square&logo=linear&logoColor=F8FAFD">
   <img alt="1Password" src="https://img.shields.io/badge/1Password-0E1119?style=flat-square&logo=1password&logoColor=F8FAFD">
   <img alt="Raycast" src="https://img.shields.io/badge/Raycast-0E1119?style=flat-square&logo=raycast&logoColor=F8FAFD">
+  <img alt="iTerm2" src="https://img.shields.io/badge/iTerm2-0E1119?style=flat-square&logo=iterm2&logoColor=F8FAFD">
+  <img alt="LM Studio" src="https://img.shields.io/badge/LM%20Studio-0E1119?style=flat-square&logo=lmstudio&logoColor=F8FAFD">
   <img alt="Homebrew" src="https://img.shields.io/badge/Homebrew-0E1119?style=flat-square&logo=homebrew&logoColor=F8FAFD">
 </p>
 
@@ -28,7 +30,9 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[Linear](https://linear.app/)**: Issues, projects, cycles and triage
 - **[Slack](https://slack.com/)**: Team communication
 - **[1Password](https://1password.com/)**: Passwords, secrets and certificates
-- **[Raycast](https://www.raycast.com/)**: Launcher and productivity workflows
+- **[Raycast](https://www.raycast.com/)**: Launcher, snippets, window management and AI extensions
+- **[iTerm2](https://iterm2.com/)**: Terminal for Claude Code sessions
+- **[LM Studio](https://lmstudio.ai/)**: Running local models on Apple silicon
 - **[Homebrew](https://brew.sh/)**: macOS package manager
 
 <img src="assets/sections/02-engineering.svg" alt="" width="100%">
@@ -45,6 +49,7 @@ An overview of the tools, services, AI tooling and integrations we use to build 
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare%20Workers-0E1119?style=flat-square&logo=cloudflareworkers&logoColor=F8FAFD">
   <img alt="Tauri" src="https://img.shields.io/badge/Tauri-0E1119?style=flat-square&logo=tauri&logoColor=F8FAFD">
   <img alt="Swift" src="https://img.shields.io/badge/Swift-0E1119?style=flat-square&logo=swift&logoColor=F8FAFD">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-0E1119?style=flat-square&logo=docker&logoColor=F8FAFD">
 </p>
 
 - **[TypeScript](https://www.typescriptlang.org/)**: One language across the full stack (TypeScript 6 and the native TypeScript 7 compiler)
@@ -56,7 +61,8 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[Trigger.dev v4](https://trigger.dev/)**: Background jobs, agent runs and orchestration
 - **[Cloudflare Workers](https://workers.cloudflare.com/)**: Edge compute for inbound email and a Workers-hosted browser agent (Agents SDK, Workers AI, Browser Rendering)
 - **[Tauri 2](https://tauri.app/)**: Native macOS desktop app
-- **Swift**: Native iOS app
+- **[Swift](https://developer.apple.com/swift/)**: Native iOS app
+- **[Docker](https://www.docker.com/)**: Containers for local services and agent sandboxes
 - **[Figma Plugin API](https://www.figma.com/plugin-docs/)**: Stunt Double for Figma
 - **[Zod 4](https://zod.dev/)**: Schema validation
 - **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)**: Linting and formatting
@@ -73,18 +79,24 @@ An overview of the tools, services, AI tooling and integrations we use to build 
   <img alt="Radix UI" src="https://img.shields.io/badge/Radix%20UI-0E1119?style=flat-square&logo=radixui&logoColor=F8FAFD">
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-0E1119?style=flat-square&logo=tailwindcss&logoColor=F8FAFD">
   <img alt="Three.js" src="https://img.shields.io/badge/Three.js-0E1119?style=flat-square&logo=threedotjs&logoColor=F8FAFD">
+  <img alt="ElevenLabs" src="https://img.shields.io/badge/ElevenLabs-0E1119?style=flat-square&logo=elevenlabs&logoColor=F8FAFD">
 </p>
 
 - **[Figma](https://www.figma.com/)**: Design, slides, prototyping, design system and Code Connect
-- **[shadcn/ui](https://ui.shadcn.com/)** + **[Radix UI](https://www.radix-ui.com/)**: Component foundations for our `@stuntdouble/ui` design system
+- **[shadcn/ui](https://ui.shadcn.com/)** + **[Radix UI](https://www.radix-ui.com/)**: Component foundations for our UI
 - **[Tailwind CSS v4](https://tailwindcss.com/)**: Utility-first styling
 - **[Fumadocs](https://fumadocs.dev/)**: Brand and design system documentation site
-- **[React Spring](https://www.react-spring.dev/)**: Animation
 - **[Three.js](https://threejs.org/)** + **[Paper Shaders](https://shaders.paper.design/)**: Shaders and visual effects
 - **[React Flow](https://reactflow.dev/)**: Node-based workflow and diagram editors
 - **[Klim](https://klim.co.nz/)**: Fonts
-- **Continuity icons**: Our in-house icon pack ([`@stunt-double/icons`](https://github.com/stunt-double/stuntkit))
+- **[Continuity icons](https://github.com/stunt-double/stuntkit)**: Our in-house icon pack (`@stunt-double/icons`)
+
+### Video and motion
+
+- **[HyperFrames](https://github.com/heygen-com/hyperframes)**: Product videos written as HTML and rendered to MP4
+- **[ElevenLabs](https://elevenlabs.io/)**: Voiceover, sound effects and music
 - **[Rotato](https://rotato.app/)**: Product mockups and video
+- **[React Spring](https://www.react-spring.dev/)**: Animation
 
 <img src="assets/sections/04-llm-models.svg" alt="" width="100%">
 
@@ -96,6 +108,7 @@ An overview of the tools, services, AI tooling and integrations we use to build 
   <img alt="Gemini" src="https://img.shields.io/badge/Gemini-0E1119?style=flat-square&logo=googlegemini&logoColor=F8FAFD">
   <img alt="Workers AI" src="https://img.shields.io/badge/Workers%20AI-0E1119?style=flat-square&logo=cloudflare&logoColor=F8FAFD">
   <img alt="LM Studio" src="https://img.shields.io/badge/LM%20Studio-0E1119?style=flat-square&logo=lmstudio&logoColor=F8FAFD">
+  <img alt="Laya MLX" src="https://img.shields.io/badge/Laya%20MLX-0E1119?style=flat-square&logo=apple&logoColor=F8FAFD">
   <img alt="Qwen" src="https://img.shields.io/badge/Qwen-0E1119?style=flat-square&logo=qwen&logoColor=F8FAFD">
 </p>
 
@@ -108,8 +121,8 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 
 ### Local
 
-- **[LM Studio](https://lmstudio.ai/)**: Running and serving models locally
-- **laya-mlx**: MLX model on Apple silicon
+- **[LM Studio](https://lmstudio.ai/)**: Running and serving models locally over an OpenAI-compatible API
+- **[Laya MLX](https://github.com/mizorewww/laya-mlx)**: Native MLX runtime for Laya typed decision models, powering Switchboard's per-prompt model triage in around 10ms
 - **[Qwen](https://qwen.ai/)**: Open-weight models from Alibaba
 - **[Gemma](https://ai.google.dev/gemma)**: Open-weight models from Google
 
@@ -121,13 +134,19 @@ An overview of the tools, services, AI tooling and integrations we use to build 
   <img alt="Claude Agent SDK" src="https://img.shields.io/badge/Claude%20Agent%20SDK-0E1119?style=flat-square&logo=claude&logoColor=F8FAFD">
   <img alt="Vercel AI SDK" src="https://img.shields.io/badge/Vercel%20AI%20SDK-0E1119?style=flat-square&logo=vercel&logoColor=F8FAFD">
   <img alt="Puppeteer" src="https://img.shields.io/badge/Puppeteer-0E1119?style=flat-square&logo=puppeteer&logoColor=F8FAFD">
+  <img alt="Playwright MCP" src="https://img.shields.io/badge/Playwright%20MCP-0E1119?style=flat-square&logo=playwright&logoColor=F8FAFD">
   <img alt="MCP" src="https://img.shields.io/badge/MCP-0E1119?style=flat-square&logo=modelcontextprotocol&logoColor=F8FAFD">
+  <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare%20Workers-0E1119?style=flat-square&logo=cloudflareworkers&logoColor=F8FAFD">
+  <img alt="Cloudflare AI Gateway" src="https://img.shields.io/badge/Cloudflare%20AI%20Gateway-0E1119?style=flat-square&logo=cloudflare&logoColor=F8FAFD">
 </p>
 
 - **[Claude Agent SDK](https://docs.claude.com/en/docs/agent-sdk/overview)**: Building agents on Claude
 - **[Vercel AI SDK v7](https://ai-sdk.dev/)**: Unified interface across Anthropic, OpenAI, Google and Vertex, with MCP and OpenTelemetry support
+- **[Cloudflare Workers](https://workers.cloudflare.com/)**: Agent runtime via the [Agents SDK](https://developers.cloudflare.com/agents/), with Workers AI and Browser Rendering
+- **[Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/)**: Caching, rate limiting, logging and fallbacks across model providers
 - **[Browserbase](https://www.browserbase.com/)** + **[Stagehand v4](https://stagehand.dev/)**: Browser infrastructure for our AI actors
 - **[Puppeteer](https://pptr.dev/)** + **[Cloudflare Browser Rendering](https://developers.cloudflare.com/browser-rendering/)**: Browser drivers
+- **[Playwright MCP](https://github.com/microsoft/playwright-mcp)**: Browser automation for coding agents via accessibility snapshots
 - **[Tavily](https://tavily.com/)**: Web search for agents
 - **[MCP](https://modelcontextprotocol.io/)**: Our own remote MCP server (OAuth 2.1, also shipped as an MCPB bundle), plus customer-supplied MCP servers for actors during runs
 - **[Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)**: Published from our site at `/.well-known/agent-skills` and in [stuntkit](https://github.com/stunt-double/stuntkit)
@@ -150,27 +169,31 @@ Connected to Claude Code and Claude across the team:
 
 | Connector | Used for |
 | --- | --- |
-| **[Stunt Double](https://stuntdouble.io)** | Dogfooding: actors, checklists, interviews, workflows, feedback and the Stunt Double Index |
-| **GitHub** | Repos, PRs, reviews and CI |
-| **Linear** | Issues, projects, cycles and docs |
-| **Vercel** | Deployments, logs, env vars, flags and analytics |
-| **Supabase** | Database, migrations, branches, type generation and advisors |
-| **Cloudflare Developer Platform** | Workers, D1, KV, R2 and Hyperdrive |
-| **Figma** | Design context, Code Connect, diagrams and generation |
-| **Graphify** | Code graph search, call graphs and change impact across our repos |
-| **Stripe** | Billing, products and analytics |
-| **Resend** | Email, broadcasts, templates and inboxes |
-| **Slack** | Messages, threads and canvases |
-| **Attio** | CRM, notes, meetings and pipeline |
-| **Gmail**, **Google Calendar**, **Google Drive** | Email, scheduling and files |
+| **[Stunt Double](https://stuntdouble.io)** | Actors, checklists, interviews, workflows, feedback and the Stunt Double Index, run against our own product |
+| **[GitHub](https://github.com/github/github-mcp-server)** | Repos, PRs, reviews and CI |
+| **[Linear](https://linear.app/docs/mcp)** | Issues, projects, cycles and docs |
+| **[Vercel](https://vercel.com/docs/mcp/vercel-mcp)** | Deployments, logs, env vars, flags and analytics |
+| **[Supabase](https://supabase.com/docs/guides/getting-started/mcp)** | Database, migrations, branches, type generation and advisors |
+| **[Cloudflare Developer Platform](https://github.com/cloudflare/mcp-server-cloudflare)** | Workers, D1, KV, R2 and Hyperdrive |
+| **[Figma](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server)** | Design context, Code Connect, diagrams and generation |
+| **[Graphify](https://graphify.com/mcp)** | Code graph search, call graphs and change impact across our repos |
+| **[Stripe](https://docs.stripe.com/mcp)** | Billing, products and analytics |
+| **[Resend](https://resend.com/docs/knowledge-base/mcp-server)** | Email, broadcasts, templates and inboxes |
+| **[Slack](https://slack.com/)** | Messages, threads and canvases |
+| **[Attio](https://attio.com/)** | CRM, notes, meetings and pipeline |
+| **[Gmail](https://mail.google.com/)**, **[Google Calendar](https://calendar.google.com/)**, **[Google Drive](https://drive.google.com/)** | Email, scheduling and files |
 
 ### Skills
 
-- **Anthropic skills**: `docs`, `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `mcp-builder`, `web-artifacts-builder`, `google-workspace`
+- **[Anthropic skills](https://github.com/anthropics/skills)**: `docs`, `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `mcp-builder`, `web-artifacts-builder`, `google-workspace`
 - **Figma skills**: `figma-use`, `figma-generate-design`, `figma-generate-library`, `figma-code-connect`, `figma-design-to-code`, `figma-generate-diagram`
-- **Supabase agent skills**: `npx skills add supabase/agent-skills`
+- **[Supabase agent skills](https://github.com/supabase/agent-skills)**: `npx skills add supabase/agent-skills`
 - **Stunt Double skills**: `stunt-double` (`npx skills add stunt-double/stuntdouble-mcp`), plus `stunt-double-wao`, `stunt-double-browser-toolset` and `stunt-double-spelling` in [stuntkit](https://github.com/stunt-double/stuntkit)
-- **Built in**: `/code-review`, `/security-review`, `/simplify`, `/init`, `/loop` and `/run`
+- **[Built in](https://code.claude.com/docs/en/slash-commands)**: `/code-review`, `/security-review`, `/simplify`, `/init`, `/loop` and `/run`
+
+### Mods
+
+- **[Switchboard](.claude/skills/switchboard)**: Claude Code mod for per-prompt model triage, a peer-session inbox and `/send`, installed from this repo's plugin marketplace
 
 <img src="assets/sections/07-open-source.svg" alt="" width="100%">
 
@@ -186,15 +209,7 @@ Connected to Claude Code and Claude across the team:
   - `@stunt-double/spelling`: US, UK and Canadian spelling localisation
   - `@stunt-double/icons`: The Continuity icon pack
 
-- **[Anthropic Claude](https://www.anthropic.com/)**: Primary LLM — via direct SDK, Vertex AI, and Agent SDK
-- **[Vercel AI SDK v6](https://sdk.vercel.ai/)**: Unified interface across providers
-- **[OpenAI](https://openai.com/)**: Embeddings
-- **[Google Vertex AI](https://cloud.google.com/vertex-ai)**: Claude models via Google Cloud
-- **[MCP (Model Context Protocol)](https://modelcontextprotocol.io/)**: AI tool integration
-- **[Browserbase](https://www.browserbase.com/)** + **[Stagehand](https://stagehand.dev/)**: Browser automation for AI agents
-- **[Tavily](https://tavily.com/)**: Web search for AI
-- **[Claude Desktop](https://claude.ai/)**: Local AI assistant
-- **Switchboard** (`.claude/skills/switchboard`): Claude Code mod for per-prompt model triage (Haiku 5.5, Opus 5.5, Fable 5.1), a peer-session inbox and `/send`. See its README for how to load it in cloud and headless sessions
+<img src="assets/sections/08-payments-and-email.svg" alt="" width="100%">
 
 ## Payments and Email
 
@@ -208,7 +223,7 @@ Connected to Claude Code and Claude across the team:
 - **[React Email](https://react.email/)**: Email templates
 - **[Svix](https://www.svix.com/)**: Webhook verification
 - **[postal-mime](https://github.com/postalsys/postal-mime)**: Inbound email parsing on Workers
-- **Web Push**: Browser and iOS notifications
+- **[Web Push](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)**: Browser and iOS notifications
 
 <img src="assets/sections/09-observability.svg" alt="" width="100%">
 
@@ -231,19 +246,26 @@ Connected to Claude Code and Claude across the team:
 
 <p>
   <img alt="Cloudflare Zero Trust" src="https://img.shields.io/badge/Cloudflare%20Zero%20Trust-0E1119?style=flat-square&logo=cloudflare&logoColor=F8FAFD">
-  <img alt="Supabase Auth" src="https://img.shields.io/badge/Supabase%20Auth-0E1119?style=flat-square&logo=supabase&logoColor=F8FAFD">
+  <img alt="OAuth 2.0" src="https://img.shields.io/badge/OAuth%202.0-0E1119?style=flat-square">
 </p>
 
 - **[Cloudflare Zero Trust](https://www.cloudflare.com/zero-trust/)**: Domain access and private VPN (free up to 50 users)
-- **[Supabase Auth](https://supabase.com/auth)**: Google, Apple and magic link sign-in
+- **[OAuth 2.0](https://oauth.net/2/)**: Sign-in with Apple, Google, Figma and GitHub
 - **[Vercel BotID](https://vercel.com/docs/botid)**: Bot protection
-- **OAuth 2.1 + PKCE**: For our MCP server and agent connections
+- **[OAuth 2.1](https://oauth.net/2.1/)** + **[PKCE](https://oauth.net/2/pkce/)**: For our MCP server and agent connections
 
 <img src="assets/sections/11-productivity.svg" alt="" width="100%">
 
 ## Productivity
 
-- **Apple Notes**
-- **Bartender**
-- **Better Display**
-- **Vorssaint**
+<p>
+  <img alt="Raycast" src="https://img.shields.io/badge/Raycast-0E1119?style=flat-square&logo=raycast&logoColor=F8FAFD">
+  <img alt="Apple Notes" src="https://img.shields.io/badge/Apple%20Notes-0E1119?style=flat-square&logo=apple&logoColor=F8FAFD">
+  <img alt="Bartender" src="https://img.shields.io/badge/Bartender-0E1119?style=flat-square&logo=apple&logoColor=F8FAFD">
+</p>
+
+- **[Raycast](https://www.raycast.com/)**: Clipboard history, snippets, quicklinks and window layouts
+- **[Apple Notes](https://support.apple.com/guide/notes/welcome/mac)**: Notes and quick capture
+- **[Bartender](https://www.macbartender.com/)**: Menu bar organisation
+- **[BetterDisplay](https://github.com/waydabber/BetterDisplay)**: Display scaling and HiDPI control
+- **[Vorssaint](https://vorssaint.com/)**: Open source macOS menu bar utility suite
