@@ -6,7 +6,7 @@
 
 An overview of the tools, services, AI tooling and integrations we use to build and run [Stunt Double](https://stuntdouble.io).
 
-<p align="center"><sub><a href="#daily-drivers">01 Daily Drivers</a> · <a href="#engineering">02 Engineering</a> · <a href="#design">03 Design</a> · <a href="#llm-models">04 LLM Models</a> · <a href="#ai-and-agents">05 AI and Agents</a> · <a href="#claude-code-setup">06 Claude Code Setup</a> · <a href="#open-source">07 Open Source</a> · <a href="#payments-and-email">08 Payments and Email</a> · <a href="#observability">09 Observability</a> · <a href="#security-and-networking">10 Security and Networking</a> · <a href="#productivity">11 Productivity</a></sub></p>
+<p align="center"><sub><a href="#daily-drivers">01 Daily Drivers</a> · <a href="#engineering">02 Engineering</a> · <a href="#design">03 Design</a> · <a href="#models">04 Models</a> · <a href="#ai-and-agents">05 AI and Agents</a> · <a href="#claude-code-setup">06 Claude Code Setup</a> · <a href="#open-source">07 Open Source</a> · <a href="#payments-and-email">08 Payments and Email</a> · <a href="#observability">09 Observability</a> · <a href="#security-and-networking">10 Security and Networking</a> · <a href="#productivity">11 Productivity</a></sub></p>
 
 <img src="assets/sections/01-daily-drivers.svg" alt="" width="100%">
 
@@ -100,7 +100,7 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 
 <img src="assets/sections/04-llm-models.svg" alt="" width="100%">
 
-## LLM Models
+## Models
 
 <p>
   <img alt="Claude" src="https://img.shields.io/badge/Claude-0E1119?style=flat-square&logo=anthropic&logoColor=F8FAFD">
