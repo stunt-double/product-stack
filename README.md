@@ -246,11 +246,11 @@ Connected to Claude Code and Claude across the team:
 
 <p>
   <img alt="Cloudflare Zero Trust" src="https://img.shields.io/badge/Cloudflare%20Zero%20Trust-0E1119?style=flat-square&logo=cloudflare&logoColor=F8FAFD">
-  <img alt="Supabase Auth" src="https://img.shields.io/badge/Supabase%20Auth-0E1119?style=flat-square&logo=supabase&logoColor=F8FAFD">
+  <img alt="OAuth 2.0" src="https://img.shields.io/badge/OAuth%202.0-0E1119?style=flat-square">
 </p>
 
 - **[Cloudflare Zero Trust](https://www.cloudflare.com/zero-trust/)**: Domain access and private VPN (free up to 50 users)
-- **[Supabase Auth](https://supabase.com/auth)**: Google, Apple and magic link sign-in
+- **[OAuth 2.0](https://oauth.net/2/)**: Sign-in with Apple, Google, Figma and GitHub
 - **[Vercel BotID](https://vercel.com/docs/botid)**: Bot protection
 - **[OAuth 2.1](https://oauth.net/2.1/)** + **[PKCE](https://oauth.net/2/pkce/)**: For our MCP server and agent connections
 
