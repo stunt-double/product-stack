@@ -6,7 +6,7 @@
 
 An overview of the tools, services, AI tooling and integrations we use to build and run [Stunt Double](https://stuntdouble.io).
 
-<p align="center"><sub><a href="#daily-drivers">01 Daily Drivers</a> · <a href="#engineering">02 Engineering</a> · <a href="#design">03 Design</a> · <a href="#llm-models">04 LLM Models</a> · <a href="#ai-and-agents">05 AI and Agents</a> · <a href="#claude-code-setup">06 Claude Code Setup</a> · <a href="#open-source">07 Open Source</a> · <a href="#payments-and-email">08 Payments and Email</a> · <a href="#observability">09 Observability</a> · <a href="#security-and-networking">10 Security and Networking</a> · <a href="#productivity">11 Productivity</a></sub></p>
+<p align="center"><sub><a href="#daily-drivers">01 Daily Drivers</a> · <a href="#engineering">02 Engineering</a> · <a href="#design">03 Design</a> · <a href="#models">04 Models</a> · <a href="#ai-and-agents">05 AI and Agents</a> · <a href="#claude-code-setup">06 Claude Code Setup</a> · <a href="#open-source">07 Open Source</a> · <a href="#payments-and-email">08 Payments and Email</a> · <a href="#observability">09 Observability</a> · <a href="#security-and-networking">10 Security and Networking</a> · <a href="#productivity">11 Productivity</a></sub></p>
 
 <img src="assets/sections/01-daily-drivers.svg" alt="" width="100%">
 
@@ -100,7 +100,7 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 
 <img src="assets/sections/04-llm-models.svg" alt="" width="100%">
 
-## LLM Models
+## Models
 
 <p>
   <img alt="Claude" src="https://img.shields.io/badge/Claude-0E1119?style=flat-square&logo=anthropic&logoColor=F8FAFD">
@@ -181,11 +181,9 @@ Connected to Claude Code and Claude across the team:
 | **[Resend](https://resend.com/docs/knowledge-base/mcp-server)** | Email, broadcasts, templates and inboxes |
 | **[Slack](https://slack.com/)** | Messages, threads and canvases |
 | **[Attio](https://attio.com/)** | CRM, notes, meetings and pipeline |
-| **[Gmail](https://mail.google.com/)**, **[Google Calendar](https://calendar.google.com/)**, **[Google Drive](https://drive.google.com/)** | Email, scheduling and files |
 
 ### Skills
 
-- **[Anthropic skills](https://github.com/anthropics/skills)**: `docs`, `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `mcp-builder`, `web-artifacts-builder`, `google-workspace`
 - **Figma skills**: `figma-use`, `figma-generate-design`, `figma-generate-library`, `figma-code-connect`, `figma-design-to-code`, `figma-generate-diagram`
 - **[Supabase agent skills](https://github.com/supabase/agent-skills)**: `npx skills add supabase/agent-skills`
 - **Stunt Double skills**: `stunt-double` (`npx skills add stunt-double/stuntdouble-mcp`), plus `stunt-double-wao`, `stunt-double-browser-toolset` and `stunt-double-spelling` in [stuntkit](https://github.com/stunt-double/stuntkit)
