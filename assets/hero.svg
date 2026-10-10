@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-label="Stunt Double Product Stack">
+  <defs>
+    <radialGradient id="lampArc" cx="1" cy="0" r="0.9">
+      <stop offset="0" stop-color="#3555E5" stop-opacity="0.55"/>
+      <stop offset="0.5" stop-color="#3555E5" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#3555E5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lampTeal" cx="0" cy="1" r="0.7">
+      <stop offset="0" stop-color="#20BCB2" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#20BCB2" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lampViolet" cx="0.72" cy="1.1" r="0.5">
+      <stop offset="0" stop-color="#9265EF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#9265EF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0"/>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#F8FAFD" stroke-opacity="0.04"/>
+    </pattern>
+    <clipPath id="card"><rect width="1200" height="420" rx="16"/></clipPath>
+  </defs>
+  <g clip-path="url(#card)">
+    <rect width="1200" height="420" fill="#0E1119"/>
+    <rect width="1200" height="420" fill="url(#grid)"/>
+    <rect width="1200" height="420" fill="url(#lampArc)"/>
+    <rect width="1200" height="420" fill="url(#lampTeal)"/>
+    <rect width="1200" height="420" fill="url(#lampViolet)"/>
+    <rect width="1200" height="420" filter="url(#grain)" opacity="0.06"/>
+  </g>
+  <svg x="64" y="56" width="132" height="44" viewBox="0 0 584.16 193.49" fill="#F8FAFD"><path d="M115.696 75.4589L155.09 75.4555C155.09 51.9462 137.42 32.796 115.605 32.796L115.696 75.4589L115.605 118.025L76.1062 118.039L76.1131 75.4563L115.696 75.4589C94.1054 75.2517 76.6938 56.0874 76.5976 32.796C54.7822 32.796 36.6042 51.8541 36.6042 75.3635C36.6042 98.8728 54.2908 118.039 76.1062 118.039L36.8085 117.931C36.8264 141.405 54.3238 160.662 76.1045 160.691L76.1062 118.039C97.4272 118.028 115.063 137.376 115.063 160.498C136.878 160.498 155.285 141.529 155.285 118.019C155.285 94.791 137.189 75.4616 115.696 75.4589Z" fill-rule="evenodd" clip-rule="evenodd"></path><g transform="translate(209.16 35.16)"><path d="M235.01 55.4271V11.0702H216.326V0.916231H266.856V11.0702H248.097V55.4271H235.01Z"></path><path d="M175.572 0.916231L197.887 35.2718H198.039V0.916231H210.52V55.4271H198.341L173.227 16.9488H173.076V55.4271H160.595V0.916231H175.572Z"></path><path d="M152.679 33.5922C152.679 48.4796 143.828 56.3432 128.548 56.3432C113.419 56.3432 104.418 48.4796 104.418 33.5159V0.916231H117.58V33.1341C117.58 40.9214 120.53 46.0366 128.548 46.0366C136.642 46.0366 139.592 40.9214 139.592 33.1341V0.916231H152.679V33.5922Z"></path><path d="M67.335 55.4271V11.0702H48.651V0.916231H99.1811V11.0702H80.4214V55.4271H67.335Z"></path><path d="M0 38.6309H12.6325C13.2377 44.8913 18.8353 46.8763 24.5086 46.8763C29.8037 46.8763 34.2667 44.7386 34.2667 40.2342C34.2667 36.7986 32.073 35.1954 26.1728 34.2029L16.6416 32.4469C8.16953 30.92 1.66416 26.721 1.66416 17.0251C1.66416 6.71842 10.8927 0 23.2227 0C37.1411 0 45.0837 6.184 46.1427 16.7197H33.8128C33.3589 11.9863 29.2742 9.46687 23.3739 9.46687C18.0032 9.46687 14.448 12.139 14.448 16.0326C14.448 19.8499 17.0955 20.8424 22.2393 21.8349L32.5269 23.8199C41.9067 25.4995 47.1261 30.3856 47.1261 39.318C47.1261 49.8538 37.4437 56.3431 24.9625 56.3431C11.1196 56.3431 1.13466 50.6172 0 38.6309Z"></path></g><g transform="translate(276.15 107.96)"><path d="M308.007 55.427H266.63V0.916184H307.477V11.0702H279.414V22.9801H304.149V33.1341H279.414V45.1967H308.007V55.427Z"></path><path d="M220.218 55.427V0.916184H233.305V45.1967H260.158V55.427H220.218Z"></path><path d="M193.983 55.427H168.34V0.916184H192.47C205.632 0.916184 212.44 6.10769 212.44 16.0326C212.44 20.7661 208.658 25.9576 204.422 27.3318C209.717 28.8587 214.331 33.4395 214.331 39.6998C214.331 50.0828 206.918 55.427 193.983 55.427ZM181.124 23.1328H191.941C197.614 23.1328 199.959 20.4607 199.959 16.7198C199.959 12.6734 197.236 10.3067 192.016 10.3067H181.124V23.1328ZM181.124 32.2943V46.0365H192.849C198.597 46.0365 201.472 43.4408 201.472 39.089C201.472 34.8137 198.597 32.2943 192.849 32.2943H181.124Z"></path><path d="M160.424 33.5922C160.424 48.4796 151.574 56.3432 136.294 56.3432C121.165 56.3432 112.163 48.4796 112.163 33.5158V0.916184H125.325V33.1341C125.325 40.9213 128.276 46.0365 136.294 46.0365C144.388 46.0365 147.338 40.9213 147.338 33.1341V0.916184H160.424V33.5922Z"></path><path d="M107.073 28.1716C107.073 44.5096 96.861 56.3431 80.2193 56.3431C63.502 56.3431 53.3657 44.5096 53.3657 28.1716C53.3657 11.8336 63.502 0 80.2193 0C96.861 0 107.073 11.8336 107.073 28.1716ZM93.7595 28.1716C93.7595 17.0251 89.2209 10.154 80.2193 10.154C71.2177 10.154 66.6791 17.0251 66.6791 28.1716C66.6791 39.318 71.2177 46.1892 80.2193 46.1892C89.2209 46.1892 93.7595 39.318 93.7595 28.1716Z"></path><path d="M22.1636 0.916184C39.0322 0.916184 49.7737 11.7573 49.7737 28.0953C49.7737 44.5096 39.0322 55.427 22.1636 55.427H0V0.916184H22.1636ZM22.1636 11.0702H12.7838V45.1967H22.1636C31.3922 45.1967 36.4603 39.3181 36.4603 28.0953C36.4603 16.9488 31.3922 11.0702 22.1636 11.0702Z"></path></g></svg>
+  <text x="1136" y="84" text-anchor="end" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" letter-spacing="2.5" fill="#9299A1">PRODUCT STACK</text>
+  <line x1="64" y1="132" x2="1136" y2="132" stroke="#F8FAFD" stroke-opacity="0.14"/>
+  <text x="62" y="230" font-family="'Tiempos Headline', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" font-size="76" letter-spacing="-2" fill="#F8FAFD">How we build <tspan font-style="italic" fill="#7E8CFC">Stunt Double</tspan>.</text>
+  <text x="64" y="282" font-family="'Untitled Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" fill="#C0C8D2">The tools, services, models and integrations we use to build and run Stunt Double.</text>
+  <line x1="64" y1="330" x2="1136" y2="330" stroke="#F8FAFD" stroke-opacity="0.14"/>
+  <g font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="1.5" fill="#9299A1">
+    <text x="64" y="364">11 SECTIONS</text>
+    <text x="600" y="364" text-anchor="middle">TOOLS · MODELS · AGENTS · CONNECTORS</text>
+    <text x="1136" y="364" text-anchor="end">STUNTDOUBLE.IO</text>
+  </g>
+</svg>

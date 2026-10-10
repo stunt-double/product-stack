@@ -1,77 +1,78 @@
-
-This is a monorepo for a web application.
-`./supabase` contains a local instance of Supabase service.
-`./trigger` contains the task files for @trigger.dev.
-The other repository files are a Next.Js app router project.
-Use node 20.x and yarn for package management.
+This is an Nx monorepo managed with pnpm (Node 22+).
+`apps/web` is the Next.js 16 App Router dashboard (also hosts the MCP server).
+`apps/trigger` contains Trigger.dev v4 tasks and agents.
+`apps/*-worker` and `apps/cloudflare-agent` are Cloudflare Workers.
+`packages/platform` is the shared domain layer; `packages/ui` is the design system.
+`supabase/` contains migrations and config for Supabase.
+Use pnpm for package management. Never use npm or yarn.
 
 ## Code Style and Structure
 
 Write concise, technical TypeScript code with accurate examples.
 Use functional and declarative programming patterns; avoid classes.
-Prefer iteration and modularization over code duplication.
+Prefer iteration and modularisation over code duplication.
 Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 Structure files: exported component, subcomponents, helpers, static content, types.
-use yarn for package management.
+Put shared domain logic in `packages/platform`, not in individual apps.
 
 ## Naming Conventions
 
 Use lowercase with dashes for directories (e.g., components/auth-wizard).
-Favor named exports for components.
-Create and use shared components from the `./components` repository.
+Favour named exports for components.
+Reuse components from `@stuntdouble/ui` before creating new ones.
 
 ## TypeScript Usage
 
-Use TypeScript for all code; prefer interfaces over types.
-Avoid enums; use maps instead.
-Use functional components with TypeScript interfaces.
-Always check typescript types and fix typescript type errors before completion.
+Use TypeScript for all code.
+Avoid enums; use maps or union types instead.
+Validate external input with Zod.
+Always check types and fix type errors before completion.
 
 ## Syntax and Formatting
 
 Use the "function" keyword for pure functions.
 Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 Use declarative JSX.
+Run ESLint and Prettier before committing.
 
 ## UI and Styling
 
-Use NextUI and Tailwind CSS for components and styling.
-Ensure NextUI components are only used in client side components.
-Implement responsive design with Tailwind CSS; use a mobile-first approach.
-Use NextUI classes to apply styles with support for themes.
-Use Next.js layout.tsx to share common styles accross routes.
+Use `@stuntdouble/ui` (shadcn/ui on Radix UI) and Tailwind CSS v4.
+Use Continuity icons from `@stunt-double/icons`.
+Implement responsive design with a mobile-first approach.
+Support light and dark themes via theme tokens, not hard-coded colours.
+Use Next.js layout.tsx to share common structure across routes.
 
-## Performance Optimization
+## Performance Optimisation
 
-Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
-Wrap client components in Suspense with fallback.
-Wrap dynamic components with Skeleton and provide an isLoaded property that returns true when loaded.
+Minimise 'use client', 'useEffect', and 'setState'; favour React Server Components (RSC).
+Wrap client components in Suspense with a fallback.
 Use dynamic loading for non-critical components.
-Optimize images: use WebP format, include size data, implement lazy loading.
-Favor server components and Next.js SSR.
+Optimise images: use WebP, include size data, implement lazy loading.
 
-## Database Querying & Data Model creation
+## Database Querying & Data Model Creation
 
-Use the Supabase SDK for data fetching and querying.
-Use the the supabase helper utilities, import "createClient" from `@/utils/supabase/server` for server components and `@/utils/supabase/client` for client components.
-For data model creation, use Supabase's schema builder.
-Supabase types are in `./types/supabase.ts`.
-Use server side actions and 'useCallback' when client components require data.
-Never use "@supabase/auth-helpers-nextjs", always use @supabase/ssr and @supabase/supabase-js.
-Create supabase migrations in the `./supabase/migrations/` directory.
-Migration files must start with a timestamp, followed by the name.
-Generate a new timestamp as EPOC, do not guess or hallucinate the time, always use the current time.
+Use the Supabase clients exported from `@stuntdouble/platform`.
+Use @supabase/ssr and @supabase/supabase-js; never use "@supabase/auth-helpers-nextjs".
+Create migrations in `./supabase/migrations/` with a timestamp prefix generated from the current time.
+`database.ts` is generated; never edit it by hand. Regenerate types via the Supabase CLI or MCP.
+Enable RLS on every new table.
 
+## AI and Agents
+
+Use the Vercel AI SDK for model calls; use the Claude Agent SDK for agentic runs.
+Run long or browser-driven work as Trigger.dev tasks, not in request handlers.
+Gate MCP tools by OAuth scope.
 
 ## Key Conventions
 
-Optimize Web Vitals (LCP, CLS, FID).
-Use only for Web API access in small components.
-Avoid for data fetching or state management.
-Follow Next.js app router specification for Data Fetching, Rendering, and Routing.
+Optimise Web Vitals (LCP, CLS, INP).
+Follow the Next.js App Router conventions for data fetching, rendering and routing.
+Use Vercel Flags for feature flags.
+Use Pino for structured logging.
 
 ## Evaluation
 
 Ensure all imported components are valid exports of the package.
-Modify package.json to include any additional packages required.
+Add any new dependencies with pnpm to the correct workspace package.
 Check and correct all errors before finishing.
