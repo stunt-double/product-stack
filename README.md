@@ -184,7 +184,6 @@ Connected to Claude Code and Claude across the team:
 
 ### Skills
 
-- **[Anthropic skills](https://github.com/anthropics/skills)**: `docs`, `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `mcp-builder`, `web-artifacts-builder`, `google-workspace`
 - **Figma skills**: `figma-use`, `figma-generate-design`, `figma-generate-library`, `figma-code-connect`, `figma-design-to-code`, `figma-generate-diagram`
 - **[Supabase agent skills](https://github.com/supabase/agent-skills)**: `npx skills add supabase/agent-skills`
 - **Stunt Double skills**: `stunt-double` (`npx skills add stunt-double/stuntdouble-mcp`), plus `stunt-double-wao`, `stunt-double-browser-toolset` and `stunt-double-spelling` in [stuntkit](https://github.com/stunt-double/stuntkit)
