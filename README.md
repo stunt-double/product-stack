@@ -194,7 +194,7 @@ Connected to Claude Code and Claude across the team:
 - **[Browserbase](https://www.browserbase.com/)** + **[Stagehand](https://stagehand.dev/)**: Browser automation for AI agents
 - **[Tavily](https://tavily.com/)**: Web search for AI
 - **[Claude Desktop](https://claude.ai/)**: Local AI assistant
-- **Switchboard** (`.claude/skills/switchboard`): Claude Code mod for per-prompt model triage (Haiku 5.5, Opus 5.5, Fable 5.1), a peer-session inbox and `/send`
+- **Switchboard** (`.claude/skills/switchboard`): Claude Code mod for per-prompt model triage (Haiku 5.5, Opus 5.5, Fable 5.1), a peer-session inbox and `/send`. See its README for how to load it in cloud and headless sessions
 
 ## Payments and Email
 

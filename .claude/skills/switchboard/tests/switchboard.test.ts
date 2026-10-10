@@ -92,3 +92,22 @@ test('a laya error falls back to the Haiku classifier', async ($, on) => {
   on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
   expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.quick.model);
 });
+
+const submit = (kind: 'composer' | 'bridge' | 'sdk' | 'task-notification') => ({
+  text: 'Rename this variable',
+  wait: false,
+  origin: { kind },
+});
+
+test('a person prompt is triaged from the terminal, the Claude app or claude -p', async ($, on) => {
+  let asked = 0;
+  on('model.classify', () => {
+    asked++;
+    return { value: 'quick: a lookup' };
+  });
+  on('prompt.submit', ($, e) => ({ text: e.text }));
+  for (const kind of ['composer', 'bridge', 'sdk'] as const) await $.prompt.submit(submit(kind));
+  expect(asked).toBe(3);
+  await $.prompt.submit(submit('task-notification'));
+  expect(asked).toBe(3);
+});
