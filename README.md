@@ -186,7 +186,15 @@ Connected to Claude Code and Claude across the team:
   - `@stunt-double/spelling`: US, UK and Canadian spelling localisation
   - `@stunt-double/icons`: The Continuity icon pack
 
-<img src="assets/sections/08-payments-and-email.svg" alt="" width="100%">
+- **[Anthropic Claude](https://www.anthropic.com/)**: Primary LLM — via direct SDK, Vertex AI, and Agent SDK
+- **[Vercel AI SDK v6](https://sdk.vercel.ai/)**: Unified interface across providers
+- **[OpenAI](https://openai.com/)**: Embeddings
+- **[Google Vertex AI](https://cloud.google.com/vertex-ai)**: Claude models via Google Cloud
+- **[MCP (Model Context Protocol)](https://modelcontextprotocol.io/)**: AI tool integration
+- **[Browserbase](https://www.browserbase.com/)** + **[Stagehand](https://stagehand.dev/)**: Browser automation for AI agents
+- **[Tavily](https://tavily.com/)**: Web search for AI
+- **[Claude Desktop](https://claude.ai/)**: Local AI assistant
+- **Switchboard** (`.claude/skills/switchboard`): Claude Code mod for per-prompt model triage (Haiku 5.5, Opus 5.5, Fable 5.1), a peer-session inbox and `/send`
 
 ## Payments and Email
 
