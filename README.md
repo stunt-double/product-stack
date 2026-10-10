@@ -181,7 +181,6 @@ Connected to Claude Code and Claude across the team:
 | **[Resend](https://resend.com/docs/knowledge-base/mcp-server)** | Email, broadcasts, templates and inboxes |
 | **[Slack](https://slack.com/)** | Messages, threads and canvases |
 | **[Attio](https://attio.com/)** | CRM, notes, meetings and pipeline |
-| **[Gmail](https://mail.google.com/)**, **[Google Calendar](https://calendar.google.com/)**, **[Google Drive](https://drive.google.com/)** | Email, scheduling and files |
 
 ### Skills
 
