@@ -1,0 +1,6 @@
+{
+  "name": "switchboard",
+  "version": "0.1.0",
+  "description": "Peer session inbox and /send, a status band above the prompt, and per-prompt model triage (Haiku, Sonnet or Opus).",
+  "types": "./types/index.d.ts"
+}

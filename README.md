@@ -48,6 +48,7 @@ An overview of the tools and services we use to build and run Stunt Double.
 - **[Browserbase](https://www.browserbase.com/)** + **[Stagehand](https://stagehand.dev/)**: Browser automation for AI agents
 - **[Tavily](https://tavily.com/)**: Web search for AI
 - **[Claude Desktop](https://claude.ai/)**: Local AI assistant
+- **Switchboard** (`.claude/skills/switchboard`): Claude Code mod for per-prompt model triage (Haiku 5.5, Opus 5.5, Fable 5.1), a peer-session inbox and `/send`
 
 ## Payments and Email
 
