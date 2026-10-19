@@ -1,7 +1,7 @@
 import type { AgentSpawnInput, CommandRunInput } from 'claude-code';
 import { expect, test } from 'claude-code/testing';
 
-import { ROUTES, tierOf } from '../hooks/register.tsx';
+import { CODEX_AGENT, ROUTES, tierOf } from '../hooks/register.tsx';
 
 const command = (name: string, args: string): CommandRunInput => ({
   command: name,
@@ -91,4 +91,38 @@ test('a laya error falls back to the Haiku classifier', async ($, on) => {
   on('model.classify', () => ({ value: 'quick: a lookup' }));
   on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
   expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.quick.model);
+});
+
+const started = ($: unknown, e: AgentSpawnInput) => ({
+  model: e.model ?? `${e.subagentType} (inherited)`,
+  agentId: 'a1',
+});
+
+test('a subagent classified for Codex is handed to the codex agent', async ($, on) => {
+  on('model.classify', () => ({ value: 'codex: hand over to Codex' }));
+  on('agent.spawn', started);
+  const r = await $.agent.spawn(spawn({}));
+  expect(r.model).toBe(`${CODEX_AGENT} (inherited)`);
+  expect((await $.command.run(command('triage', ''))).text).toContain('1 codex');
+});
+
+test('without the codex agent a handover is routed deep instead', async ($, on) => {
+  on('model.classify', () => ({ value: 'codex: hand over to Codex' }));
+  on('agent.spawn', ($, e) =>
+    e.subagentType === CODEX_AGENT ? { deny: 'no such agent' } : started($, e)
+  );
+  expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.deep.model);
+});
+
+test('/triage codex off keeps Codex out of the subagent choices', async ($, on) => {
+  const seen: string[][] = [];
+  on('model.classify', ($, e) => {
+    seen.push(e.labels);
+    return { value: 'standard: an ordinary coding task' };
+  });
+  on('agent.spawn', started);
+  expect((await $.command.run(command('triage', 'codex off'))).text).toContain('Codex handover off');
+  expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.standard.model);
+  expect(seen.length).toBe(1);
+  expect(seen[0].some((l) => l.startsWith('codex'))).toBe(false);
 });
