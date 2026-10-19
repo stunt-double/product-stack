@@ -5,7 +5,7 @@
     {
       "name": "switchboard",
       "source": "./.claude/skills/switchboard",
-      "description": "Per-prompt model triage (Haiku 5.5, Opus 5.5, Fable 5.1) with local laya-mlx classification, a peer-session inbox and /send."
+      "description": "Peer session inbox and /send, a status band, per-prompt model triage with local laya-mlx classification, and Codex handover."
     }
   ]
 }

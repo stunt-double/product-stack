@@ -126,3 +126,22 @@ test('/triage codex off keeps Codex out of the subagent choices', async ($, on) 
   expect(seen.length).toBe(1);
   expect(seen[0].some((l) => l.startsWith('codex'))).toBe(false);
 });
+
+const submit = (kind: 'composer' | 'bridge' | 'sdk' | 'task-notification') => ({
+  text: 'Rename this variable',
+  wait: false,
+  origin: { kind },
+});
+
+test('a person prompt is triaged from the terminal, the Claude app or claude -p', async ($, on) => {
+  let asked = 0;
+  on('model.classify', () => {
+    asked++;
+    return { value: 'quick: a lookup' };
+  });
+  on('prompt.submit', ($, e) => ({ text: e.text }));
+  for (const kind of ['composer', 'bridge', 'sdk'] as const) await $.prompt.submit(submit(kind));
+  expect(asked).toBe(3);
+  await $.prompt.submit(submit('task-notification'));
+  expect(asked).toBe(3);
+});
