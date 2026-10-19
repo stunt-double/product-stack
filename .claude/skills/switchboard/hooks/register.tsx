@@ -1,9 +1,10 @@
 import type { EngineInterface, Register } from 'claude-code';
 import { atom, read, update } from 'claude-code';
 
-import type { SwitchboardMessage, SwitchboardTier } from '../types';
+import type { SwitchboardMessage, SwitchboardRoute, SwitchboardTier } from '../types';
 
 const isTriageOn = atom({ plugin: 'switchboard', key: 'isTriageOn' } as const, true);
+const isCodexOn = atom({ plugin: 'switchboard', key: 'isCodexOn' } as const, true);
 const pinned = atom({ plugin: 'switchboard', key: 'pinned' } as const, null);
 const tier = atom({ plugin: 'switchboard', key: 'tier' } as const, null);
 const inbox = atom({ plugin: 'switchboard', key: 'inbox' } as const, []);
@@ -12,6 +13,9 @@ const subagents = atom({ plugin: 'switchboard', key: 'subagents' } as const, {
   quick: 0,
   standard: 0,
   deep: 0,
+  ultra: 0,
+  copywriting: 0,
+  codex: 0,
 });
 // ponytail: one entry per workflow agent for the session; fine at workflow scale.
 const agentTiers = atom({ plugin: 'switchboard', key: 'agentTiers' } as const, {});
@@ -36,14 +40,24 @@ const HINTS: Record<SwitchboardTier, string> = {
   ultra: 'full-system redesign, highest-complexity multi-step work, maximum reasoning needed',
   copywriting: 'marketing copy, product writing, messaging, tone and voice',
 };
-const LABELS = TIERS.map((t) => `${t}: ${HINTS[t]}`);
+
+// A generic subagent may instead be handed over to Codex (the openai-codex plugin's agent).
+export const CODEX_AGENT = 'codex:codex-rescue';
+const SPAWN_HINTS: Record<SwitchboardRoute, string> = {
+  ...HINTS,
+  codex:
+    'hand over to Codex: a large self-contained implementation, a second opinion on a risky design, or a bug whose cause is still unclear',
+};
+const ROUTE_NAMES: readonly SwitchboardRoute[] = [...TIERS, 'codex'];
 
 // The repo's local laya-mlx MCP server (.mcp.json); below this margin it is unsure (see deciding-with-laya).
 const LAYA_SERVER = 'laya';
 const LAYA_MIN_CONFIDENCE = 0.1;
 
-export const tierOf = (label: string | undefined): SwitchboardTier | null =>
-  TIERS.find((t) => label?.startsWith(t)) ?? null;
+const choiceOf = <T extends string>(options: Record<T, string>, label: string | undefined): T | null =>
+  (Object.keys(options) as T[]).find((k) => label?.startsWith(k)) ?? null;
+
+export const tierOf = (label: string | undefined): SwitchboardTier | null => choiceOf(HINTS, label);
 
 // Agent types whose model nobody chose: a custom agent's own `model` is respected.
 const TRIAGED_TYPES = new Set(['general-purpose']);
@@ -66,32 +80,50 @@ const PEER_KINDS = new Set(['peer', 'coordinator', 'peer-send-message']);
 const PERSON_KINDS = new Set(['composer', 'bridge', 'sdk']);
 
 // Local laya-mlx first (~10ms, free); Haiku when laya is not connected, errors or is unsure.
-async function layaTier($: EngineInterface, text: string): Promise<SwitchboardTier | null> {
+async function layaChoice<T extends string>(
+  $: EngineInterface,
+  text: string,
+  options: Record<T, string>
+): Promise<T | null> {
   try {
     const res = await $.mcp.call(LAYA_SERVER, 'choose', {
       state: text.slice(0, 2000),
       question: 'How demanding is this request?',
-      options: HINTS,
+      options,
     });
     const raw = res.content.find((b) => b.type === 'text')?.text;
     if (res.isError || raw === undefined) return null;
     const answer = JSON.parse(raw) as { choice?: string; confidence?: number };
-    return (answer.confidence ?? 0) >= LAYA_MIN_CONFIDENCE ? tierOf(answer.choice) : null;
+    return (answer.confidence ?? 0) >= LAYA_MIN_CONFIDENCE ? choiceOf(options, answer.choice) : null;
   } catch {
     return null;
   }
 }
 
-const classify = async ($: EngineInterface, text: string): Promise<SwitchboardTier | null> =>
-  (await layaTier($, text)) ??
-  $.model
-    .classify(text.slice(0, 4000), LABELS, { model: 'haiku' })
-    .then(tierOf)
-    .catch(() => null);
-
-async function count($: EngineInterface, picked: SwitchboardTier) {
-  await update($, subagents, (n) => ({ ...n, [picked]: n[picked] + 1 }));
+async function classify($: EngineInterface, text: string): Promise<SwitchboardTier | null>;
+async function classify<T extends string>(
+  $: EngineInterface,
+  text: string,
+  options: Record<T, string>
+): Promise<T | null>;
+async function classify($: EngineInterface, text: string, options: Record<string, string> = HINTS) {
+  const labels = Object.entries(options).map(([k, hint]) => `${k}: ${hint}`);
+  return (
+    (await layaChoice($, text, options)) ??
+    $.model
+      .classify(text.slice(0, 4000), labels, { model: 'haiku' })
+      .then((label) => choiceOf(options, label))
+      .catch(() => null)
+  );
 }
+
+async function count($: EngineInterface, picked: SwitchboardRoute) {
+  // A tally kept from before a route existed lacks its key.
+  await update($, subagents, (n) => ({ ...n, [picked]: (n[picked] ?? 0) + 1 }));
+}
+
+const tallyOf = (routed: Partial<Record<SwitchboardRoute, number>>) =>
+  ROUTE_NAMES.filter((t) => (routed[t] ?? 0) > 0).map((t) => `${routed[t]} ${t}`);
 
 // The session's own model, read off the main loop before triage rewrites it; kept across reloads.
 const sessionModel = atom({ plugin: 'switchboard', key: 'sessionModel' } as const, null);
@@ -137,8 +169,8 @@ export const register: Register = (on) => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'triage',
-      description: 'Model triage: on, off, auto, or pin quick|standard|deep',
-      argumentHint: '[on|off|auto|quick|standard|deep]',
+      description: 'Model triage: on, off, auto, pin a tier, or codex on|off for subagent handover',
+      argumentHint: '[on|off|auto|quick|standard|deep|ultra|copywriting|codex on|codex off]',
     });
     await $.command.register({
       name: 'inbox',
@@ -168,7 +200,7 @@ export const register: Register = (on) => {
     return next(e);
   });
 
-  // Agent tool subagents: route a generic subagent nobody picked a model for.
+  // Agent tool subagents: route a generic subagent nobody picked a model for, or hand it to Codex.
   on('agent.spawn', async ($, e, next) => {
     if (
       e.fork ||
@@ -179,8 +211,22 @@ export const register: Register = (on) => {
     )
       return next(e);
 
-    const picked = await classify($, `${e.description}\n\n${e.prompt}`);
+    const task = `${e.description}\n\n${e.prompt}`;
+    const picked = (await read($, isCodexOn)) ? await classify($, task, SPAWN_HINTS) : await classify($, task);
     if (picked === null) return next(e);
+
+    if (picked === 'codex') {
+      // Codex's agent keeps its own model; the Agent prompt is already self-contained.
+      const handed = await next({ ...e, subagentType: CODEX_AGENT });
+      if (handed.deny === undefined) {
+        await count($, 'codex');
+        return handed;
+      }
+      // The codex plugin is not installed or refused: the work is substantial, so route it deep.
+      await count($, 'deep');
+      return next({ ...e, model: ROUTES.deep.model });
+    }
+
     await count($, picked);
     return next({ ...e, model: ROUTES[picked].model });
   });
@@ -270,22 +316,24 @@ export const register: Register = (on) => {
   });
 
   on('command.run', { command: 'triage' }, async ($, e) => {
-    const arg = e.args.trim();
-    if (arg === 'on' || arg === 'off') await update($, isTriageOn, () => arg === 'on');
+    const arg = e.args.trim().replace(/\s+/g, ' ');
+    if (arg === 'codex on' || arg === 'codex off') await update($, isCodexOn, () => arg === 'codex on');
+    else if (arg === 'on' || arg === 'off') await update($, isTriageOn, () => arg === 'on');
     else if (arg === 'auto') await update($, pinned, () => null);
     else if ((TIERS as readonly string[]).includes(arg))
       await update($, pinned, () => arg as SwitchboardTier);
-    else if (arg !== '') return { text: 'Usage: /triage [on|off|auto|quick|standard|deep]' };
+    else if (arg !== '')
+      return { text: 'Usage: /triage [on|off|auto|quick|standard|deep|ultra|copywriting|codex on|codex off]' };
 
     if (!(await read($, isTriageOn)) && (await read($, pinned)) === null) {
       await update($, tier, () => null);
       $.ui.status(undefined);
     }
     const pin = await read($, pinned);
-    const routed = await read($, subagents);
-    const tally = TIERS.filter((t) => routed[t] > 0).map((t) => `${routed[t]} ${t}`);
+    const tally = tallyOf(await read($, subagents));
+    const codex = (await read($, isCodexOn)) ? '' : ' Codex handover off.';
     return {
-      text: `Triage ${(await read($, isTriageOn)) ? 'on' : 'off'}${pin ? `, pinned to ${pin} (${ROUTES[pin].model})` : ''}.${tally.length ? ` Subagents routed: ${tally.join(', ')}.` : ''}`,
+      text: `Triage ${(await read($, isTriageOn)) ? 'on' : 'off'}${pin ? `, pinned to ${pin} (${ROUTES[pin].model})` : ''}.${codex}${tally.length ? ` Subagents routed: ${tally.join(', ')}.` : ''}`,
     };
   });
 
@@ -293,8 +341,7 @@ export const register: Register = (on) => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     const picked = await read($, tier);
     const count = await read($, unread);
-    const routed = await read($, subagents);
-    const tally = TIERS.filter((t) => routed[t] > 0).map((t) => `${routed[t]} ${t}`);
+    const tally = tallyOf(await read($, subagents));
     if (e.props.hasSurvey || (picked === null && count === 0 && tally.length === 0)) return next(e);
 
     const { Box, Button, Text } = $.ui.resolve(e);
