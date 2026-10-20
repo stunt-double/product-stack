@@ -1,6 +1,7 @@
 import type { EngineInterface, Register } from 'claude-code';
 import { atom, read, update } from 'claude-code';
 
+import { choice, type Fetch, TypeSafeClient } from './vendor/typesafe-sdk.mjs';
 import type { SwitchboardMessage, SwitchboardRoute, SwitchboardTier } from '../types';
 
 const isTriageOn = atom({ plugin: 'switchboard', key: 'isTriageOn' } as const, true);
@@ -50,9 +51,10 @@ const SPAWN_HINTS: Record<SwitchboardRoute, string> = {
 };
 const ROUTE_NAMES: readonly SwitchboardRoute[] = [...TIERS, 'codex'];
 
-// The repo's local laya-mlx MCP server (.mcp.json); below this margin it is unsure (see deciding-with-laya).
-const LAYA_SERVER = 'laya';
-const LAYA_MIN_CONFIDENCE = 0.1;
+// TypeSafe's Jev decides first when a key is set; below this Choice confidence it is unsure.
+// ponytail: 0.3 is a starting point (a 5-way choice's peak near 0.45); tune on real prompts.
+const JEV_MODEL = 'jev-latest';
+const JEV_MIN_CONFIDENCE = 0.3;
 
 const choiceOf = <T extends string>(options: Record<T, string>, label: string | undefined): T | null =>
   (Object.keys(options) as T[]).find((k) => label?.startsWith(k)) ?? null;
@@ -79,22 +81,61 @@ const PEER_KINDS = new Set(['peer', 'coordinator', 'peer-send-message']);
 // A person's own prompt: typed at the terminal, sent from the Claude app (Remote Control), or `claude -p` / the Agent SDK.
 const PERSON_KINDS = new Set(['composer', 'bridge', 'sdk']);
 
-// Local laya-mlx first (~10ms, free); Haiku when laya is not connected, errors or is unsure.
-async function layaChoice<T extends string>(
+// The key from `claude plugin configure switchboard`, else TYPESAFE_API_KEY; set by register.
+let configuredKey: string | undefined;
+
+async function typesafeKey($: EngineInterface): Promise<string | undefined> {
+  return configuredKey || (await $.env.get('TYPESAFE_API_KEY').catch(() => undefined)) || undefined;
+}
+
+// The SDK's fetch over the host's: the module has no fetch or Response of its own. The body is
+// read whole, so `body` is null and the SDK skips its streaming buffer.
+const hostFetch =
+  ($: EngineInterface): Fetch =>
+  async (url, init) => {
+    const res = await $.http.fetch(url, {
+      method: init?.method,
+      headers: init?.headers as Record<string, string> | undefined,
+      body: init?.body as string | undefined,
+    });
+    const response = {
+      ok: res.ok,
+      status: res.status,
+      headers: { get: (name: string) => res.headers[name.toLowerCase()] ?? null },
+      body: null,
+      text: async () => res.text,
+      json: async () => JSON.parse(res.text),
+      clone: () => response,
+    };
+    return response as unknown as Awaited<ReturnType<Fetch>>;
+  };
+
+// Jev first (fast, typed, calibrated); Haiku when no key is set, the call fails or Jev is unsure.
+async function jevChoice<T extends string>(
   $: EngineInterface,
   text: string,
   options: Record<T, string>
 ): Promise<T | null> {
+  const apiKey = await typesafeKey($);
+  if (apiKey === undefined) return null;
   try {
-    const res = await $.mcp.call(LAYA_SERVER, 'choose', {
-      state: text.slice(0, 2000),
-      question: 'How demanding is this request?',
-      options,
+    // No retries and a short timeout: a prompt waits on this, and Haiku is the fallback.
+    const client = new TypeSafeClient({
+      apiKey,
+      fetch: hostFetch($),
+      compression: false,
+      timeout: 5000,
+      retry: { maxRetries: 0 },
     });
-    const raw = res.content.find((b) => b.type === 'text')?.text;
-    if (res.isError || raw === undefined) return null;
-    const answer = JSON.parse(raw) as { choice?: string; confidence?: number };
-    return (answer.confidence ?? 0) >= LAYA_MIN_CONFIDENCE ? choiceOf(options, answer.choice) : null;
+    const { answers } = await client.systemOne({
+      model: JEV_MODEL,
+      state: { request: text.slice(0, 8000) },
+      questions: {
+        route: choice('Which option best describes the work the coding assistant must do for `request`?', options),
+      },
+    });
+    const { choice: picked, confidence } = answers.route;
+    return (confidence ?? 0) >= JEV_MIN_CONFIDENCE ? choiceOf(options, picked) : null;
   } catch {
     return null;
   }
@@ -109,7 +150,7 @@ async function classify<T extends string>(
 async function classify($: EngineInterface, text: string, options: Record<string, string> = HINTS) {
   const labels = Object.entries(options).map(([k, hint]) => `${k}: ${hint}`);
   return (
-    (await layaChoice($, text, options)) ??
+    (await jevChoice($, text, options)) ??
     $.model
       .classify(text.slice(0, 4000), labels, { model: 'haiku' })
       .then((label) => choiceOf(options, label))
@@ -165,7 +206,9 @@ async function decideWorkflowAgent(
   return picked;
 }
 
-export const register: Register = (on) => {
+export const register: Register = (on, options) => {
+  configuredKey = typeof options.typesafe_api_key === 'string' ? options.typesafe_api_key : undefined;
+
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'triage',
@@ -332,8 +375,11 @@ export const register: Register = (on) => {
     const pin = await read($, pinned);
     const tally = tallyOf(await read($, subagents));
     const codex = (await read($, isCodexOn)) ? '' : ' Codex handover off.';
+    const decider = (await typesafeKey($))
+      ? ` Decided by ${JEV_MODEL}, Haiku when unsure.`
+      : ' Decided by Haiku: set TYPESAFE_API_KEY or run `claude plugin configure switchboard` to decide with Jev.';
     return {
-      text: `Triage ${(await read($, isTriageOn)) ? 'on' : 'off'}${pin ? `, pinned to ${pin} (${ROUTES[pin].model})` : ''}.${codex}${tally.length ? ` Subagents routed: ${tally.join(', ')}.` : ''}`,
+      text: `Triage ${(await read($, isTriageOn)) ? 'on' : 'off'}${pin ? `, pinned to ${pin} (${ROUTES[pin].model})` : ''}.${decider}${codex}${tally.length ? ` Subagents routed: ${tally.join(', ')}.` : ''}`,
     };
   });
 

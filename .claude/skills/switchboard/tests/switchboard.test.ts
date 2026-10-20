@@ -38,7 +38,7 @@ test('/triage pins a tier and reports its model', async ($) => {
   const pinned = await $.command.run(command('triage', 'deep'));
   expect(pinned.text).toContain(ROUTES.deep.model);
   const off = await $.command.run(command('triage', 'auto'));
-  expect(off.text).toBe('Triage on.');
+  expect(off.text).toContain('Triage on.');
 });
 
 test('/send without a message shows usage', async ($) => {
@@ -68,26 +68,70 @@ test('triage off leaves subagents alone', async ($, on) => {
   expect((await $.agent.spawn(spawn({}))).model).toBe('inherited');
 });
 
-const laya = (choice: string, confidence: number) => ({
-  value: { content: [{ type: 'text', text: JSON.stringify({ choice, confidence }) }] },
+const jev = (choice: string, confidence: number) => ({
+  value: {
+    status: 200,
+    ok: true,
+    headers: { 'content-type': 'application/json' },
+    text: JSON.stringify({
+      model: 'jev-1.14.0',
+      answers: { route: { type: 'choice', choice, confidence, probabilities: { [choice]: 0.9 } } },
+      usage: { input_tokens: 100, output_tokens: 1 },
+    }),
+  },
 });
+const keyed = { options: { typesafe_api_key: 'ts-test' } };
 
-test('a confident local laya answer routes a subagent without asking Haiku', async ($, on) => {
-  on('mcp.call', () => laya('deep', 0.4));
+test('a confident Jev answer routes a subagent without asking Haiku', keyed, async ($, on) => {
+  const sent: { url: string; auth?: string; body: { model: string; questions: Record<string, { type: string }> } }[] = [];
+  on('http.fetch', ($, e) => {
+    sent.push({ url: e.url, auth: e.init?.headers?.Authorization, body: JSON.parse(e.init?.body ?? '{}') });
+    return jev('deep', 0.8);
+  });
   on('model.classify', () => ({ value: 'quick: haiku was asked' }));
   on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
   expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.deep.model);
+  const [request] = sent;
+  expect(request?.url).toBe('https://api.typesafe.ai/v1/systemone');
+  expect(request?.auth).toBe('Bearer ts-test');
+  expect(request?.body.model).toBe('jev-latest');
+  expect(request?.body.questions.route?.type).toBe('choice');
 });
 
-test('an unsure laya falls back to the Haiku classifier', async ($, on) => {
-  on('mcp.call', () => laya('deep', 0.02));
+test('TYPESAFE_API_KEY lets Jev decide when no key is configured', async ($, on) => {
+  on('env.get', () => ({ value: 'ts-env' }));
+  on('http.fetch', () => jev('deep', 0.8));
+  on('model.classify', () => ({ value: 'quick: haiku was asked' }));
+  on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
+  expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.deep.model);
+  expect((await $.command.run(command('triage', ''))).text).toContain('Decided by jev-latest');
+});
+
+test('with no key Haiku decides and Jev is never called', async ($, on) => {
+  let called = 0;
+  on('env.get', () => ({ value: undefined }));
+  on('http.fetch', () => {
+    called++;
+    return jev('deep', 0.8);
+  });
+  on('model.classify', () => ({ value: 'quick: a lookup' }));
+  on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
+  expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.quick.model);
+  expect(called).toBe(0);
+  expect((await $.command.run(command('triage', ''))).text).toContain('claude plugin configure switchboard');
+});
+
+test('an unsure Jev falls back to the Haiku classifier', keyed, async ($, on) => {
+  on('http.fetch', () => jev('deep', 0.1));
   on('model.classify', () => ({ value: 'quick: a lookup' }));
   on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
   expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.quick.model);
 });
 
-test('a laya error falls back to the Haiku classifier', async ($, on) => {
-  on('mcp.call', () => ({ value: { isError: true, content: [{ type: 'text', text: 'down' }] } }));
+test('a Jev error falls back to the Haiku classifier', keyed, async ($, on) => {
+  on('http.fetch', () => ({
+    value: { status: 401, ok: false, headers: { 'content-type': 'application/json' }, text: '{"detail":"bad key"}' },
+  }));
   on('model.classify', () => ({ value: 'quick: a lookup' }));
   on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: 'a1' }));
   expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.quick.model);

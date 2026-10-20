@@ -5,7 +5,7 @@
     {
       "name": "switchboard",
       "source": "./.claude/skills/switchboard",
-      "description": "Peer session inbox and /send, a status band, per-prompt model triage with local laya-mlx classification, and Codex handover."
+      "description": "Peer session inbox and /send, a status band, per-prompt model triage decided by TypeSafe's Jev, and Codex handover."
     }
   ]
 }
