@@ -1,6 +1,15 @@
 {
   "name": "switchboard",
-  "version": "0.2.0",
-  "description": "Peer session inbox and /send, a status band above the prompt, and per-prompt model triage, and handover of generic subagents to Codex.",
-  "types": "./types/index.d.ts"
+  "version": "0.3.0",
+  "description": "Peer session inbox and /send, a status band above the prompt, per-prompt model triage decided by TypeSafe's Jev, and handover of generic subagents to Codex.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "typesafe_api_key": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Lets TypeSafe's Jev decide each triage (else TYPESAFE_API_KEY is read; with neither, Haiku decides).",
+      "sensitive": true,
+      "required": false
+    }
+  }
 }

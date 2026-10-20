@@ -104,11 +104,11 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 
 <p>
   <img alt="Claude" src="https://img.shields.io/badge/Claude-0E1119?style=flat-square&logo=anthropic&logoColor=F8FAFD">
+  <img alt="TypeSafe" src="https://img.shields.io/badge/TypeSafe-0E1119?style=flat-square">
   <img alt="Vertex AI" src="https://img.shields.io/badge/Vertex%20AI-0E1119?style=flat-square&logo=googlecloud&logoColor=F8FAFD">
   <img alt="Gemini" src="https://img.shields.io/badge/Gemini-0E1119?style=flat-square&logo=googlegemini&logoColor=F8FAFD">
   <img alt="Workers AI" src="https://img.shields.io/badge/Workers%20AI-0E1119?style=flat-square&logo=cloudflare&logoColor=F8FAFD">
   <img alt="LM Studio" src="https://img.shields.io/badge/LM%20Studio-0E1119?style=flat-square&logo=lmstudio&logoColor=F8FAFD">
-  <img alt="Laya MLX" src="https://img.shields.io/badge/Laya%20MLX-0E1119?style=flat-square&logo=apple&logoColor=F8FAFD">
   <img alt="Qwen" src="https://img.shields.io/badge/Qwen-0E1119?style=flat-square&logo=qwen&logoColor=F8FAFD">
 </p>
 
@@ -117,12 +117,12 @@ An overview of the tools, services, AI tooling and integrations we use to build 
 - **[Anthropic Claude](https://www.anthropic.com/)**: Primary model family (Opus, Sonnet and Haiku) via the Anthropic API and Vertex AI
 - **[Google Vertex AI](https://cloud.google.com/vertex-ai)**: Claude and Gemini via Google Cloud
 - **[OpenAI](https://openai.com/)**: Embeddings and supporting models
+- **[TypeSafe](https://typesafe.ai/)**: Jev, a System One model returning typed, calibrated decisions, powering Switchboard's per-prompt model triage
 - **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)**: Open models at the edge
 
 ### Local
 
 - **[LM Studio](https://lmstudio.ai/)**: Running and serving models locally over an OpenAI-compatible API
-- **[Laya MLX](https://github.com/mizorewww/laya-mlx)**: Native MLX runtime for Laya typed decision models, powering Switchboard's per-prompt model triage in around 10ms
 - **[Qwen](https://qwen.ai/)**: Open-weight models from Alibaba
 - **[Gemma](https://ai.google.dev/gemma)**: Open-weight models from Google
 
