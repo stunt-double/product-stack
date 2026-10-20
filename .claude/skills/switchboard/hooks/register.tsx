@@ -1,8 +1,14 @@
-import type { EngineInterface, Register } from 'claude-code';
+import type { AgentSpawnInput, AgentSpawnResult, EngineInterface, Register } from 'claude-code';
 import { atom, read, update } from 'claude-code';
 
 import { choice, type Fetch, TypeSafeClient } from './vendor/typesafe-sdk.mjs';
-import type { SwitchboardMessage, SwitchboardRoute, SwitchboardTier } from '../types';
+import type {
+  SwitchboardAgent,
+  SwitchboardMessage,
+  SwitchboardRoute,
+  SwitchboardTier,
+  SwitchboardWire,
+} from '../types';
 
 const isTriageOn = atom({ plugin: 'switchboard', key: 'isTriageOn' } as const, true);
 const isCodexOn = atom({ plugin: 'switchboard', key: 'isCodexOn' } as const, true);
@@ -21,7 +27,13 @@ const subagents = atom({ plugin: 'switchboard', key: 'subagents' } as const, {
 // ponytail: one entry per workflow agent for the session; fine at workflow scale.
 const agentTiers = atom({ plugin: 'switchboard', key: 'agentTiers' } as const, {});
 
+// The switchboard pane: every agent of the session as a tree, and every message between them.
+const agents = atom({ plugin: 'switchboard', key: 'agents' } as const, []);
+const wire = atom({ plugin: 'switchboard', key: 'wire' } as const, []);
+
 const INBOX = 'switchboard-inbox';
+const BOARD = 'switchboard-board';
+const MAIN = 'main';
 const TIERS: readonly SwitchboardTier[] = ['quick', 'standard', 'deep', 'ultra', 'copywriting'];
 
 // Cheapest model that does the job; Opus kept for hard reasoning. Every route has a 1M window:
@@ -166,6 +178,22 @@ async function count($: EngineInterface, picked: SwitchboardRoute) {
 const tallyOf = (routed: Partial<Record<SwitchboardRoute, number>>) =>
   ROUTE_NAMES.filter((t) => (routed[t] ?? 0) > 0).map((t) => `${routed[t]} ${t}`);
 
+async function track($: EngineInterface, agent: SwitchboardAgent) {
+  await update($, agents, (all) => [...all.filter((a) => a.id !== agent.id), agent].slice(-100));
+}
+
+// A send between this session's own loops also arrives at session.receive: keep it once.
+const ECHO_MS = 10_000;
+
+async function record($: EngineInterface, message: Omit<SwitchboardWire, 'at'>, isEcho = false) {
+  const at = await $.clock.now();
+  await update($, wire, (all) =>
+    isEcho && all.some((w) => at - w.at < ECHO_MS && w.text !== '' && message.text.includes(w.text))
+      ? all
+      : [...all, { ...message, at }].slice(-200)
+  );
+}
+
 // The session's own model, read off the main loop before triage rewrites it; kept across reloads.
 const sessionModel = atom({ plugin: 'switchboard', key: 'sessionModel' } as const, null);
 // A subagent's opening task, captured at session.append until its first request.
@@ -203,7 +231,99 @@ async function decideWorkflowAgent(
     if (picked !== null) await count($, picked);
   }
   await update($, agentTiers, (all) => ({ ...all, [step.agentId]: picked }));
+  if (isWorkflowAgent)
+    await track($, {
+      id: step.agentId,
+      description: (task.split('\n', 1)[0] ?? '').slice(0, 120),
+      type: 'workflow',
+      route: picked,
+      model: picked ? ROUTES[picked].model : step.model,
+      status: 'running',
+      at: await $.clock.now(),
+    });
   return picked;
+}
+
+const STATUS: Record<SwitchboardAgent['status'], { glyph: string; color?: 'claude' | 'success' | 'error' | 'inactive' }> = {
+  running: { glyph: '●', color: 'claude' },
+  idle: { glyph: '○', color: 'inactive' },
+  completed: { glyph: '✓', color: 'success' },
+  failed: { glyph: '✗', color: 'error' },
+  killed: { glyph: '✗', color: 'error' },
+};
+
+const ROUTE_COLOR: Record<SwitchboardRoute, 'success' | 'suggestion' | 'permission' | 'claude' | 'remember' | 'warning'> = {
+  quick: 'success',
+  standard: 'suggestion',
+  deep: 'permission',
+  ultra: 'claude',
+  copywriting: 'remember',
+  codex: 'warning',
+};
+
+const shortModel = (model: string) => model.replace(/^claude-/, '');
+const clip = (text: string, width: number) => {
+  const line = text.replace(/\s+/g, ' ').trim();
+  return line.length > width ? `${line.slice(0, Math.max(1, width - 1))}…` : line;
+};
+const ago = (ms: number) =>
+  ms < 60_000 ? `${Math.max(0, Math.round(ms / 1000))}s` : ms < 3_600_000 ? `${Math.round(ms / 60_000)}m` : `${Math.round(ms / 3_600_000)}h`;
+
+// Depth-first under main; an agent whose parent is not tracked hangs off main.
+function treeOf(list: SwitchboardAgent[]): { agent: SwitchboardAgent; prefix: string }[] {
+  const ids = new Set(list.map((a) => a.id));
+  const children = new Map<string, SwitchboardAgent[]>();
+  for (const a of list) {
+    const parent = a.parentId !== undefined && ids.has(a.parentId) ? a.parentId : MAIN;
+    children.set(parent, [...(children.get(parent) ?? []), a]);
+  }
+  const rows: { agent: SwitchboardAgent; prefix: string }[] = [];
+  const walk = (id: string, indent: string) => {
+    const kids = children.get(id) ?? [];
+    kids.forEach((agent, i) => {
+      const isLast = i === kids.length - 1;
+      rows.push({ agent, prefix: `${indent}${isLast ? '└─' : '├─'} ` });
+      walk(agent.id, `${indent}${isLast ? '   ' : '│  '}`);
+    });
+  };
+  walk(MAIN, '');
+  return rows;
+}
+
+type Spawned = { spawned: AgentSpawnResult; route: SwitchboardRoute | null };
+
+async function routeSpawn(
+  $: EngineInterface,
+  e: AgentSpawnInput,
+  next: (e: AgentSpawnInput) => Promise<AgentSpawnResult>
+): Promise<Spawned> {
+  if (
+    e.fork ||
+    e.isTeammate ||
+    e.model !== undefined ||
+    !TRIAGED_TYPES.has(e.subagentType) ||
+    !(await read($, isTriageOn))
+  )
+    return { spawned: await next(e), route: null };
+
+  const task = `${e.description}\n\n${e.prompt}`;
+  const picked = (await read($, isCodexOn)) ? await classify($, task, SPAWN_HINTS) : await classify($, task);
+  if (picked === null) return { spawned: await next(e), route: null };
+
+  if (picked === 'codex') {
+    // Codex's agent keeps its own model; the Agent prompt is already self-contained.
+    const handed = await next({ ...e, subagentType: CODEX_AGENT });
+    if (handed.deny === undefined) {
+      await count($, 'codex');
+      return { spawned: handed, route: 'codex' };
+    }
+    // The codex plugin is not installed or refused: the work is substantial, so route it deep.
+    await count($, 'deep');
+    return { spawned: await next({ ...e, model: ROUTES.deep.model }), route: 'deep' };
+  }
+
+  await count($, picked);
+  return { spawned: await next({ ...e, model: ROUTES[picked].model }), route: picked };
 }
 
 export const register: Register = (on, options) => {
@@ -218,6 +338,11 @@ export const register: Register = (on, options) => {
     await $.command.register({
       name: 'inbox',
       description: 'Show messages from other sessions and agents',
+    });
+    await $.command.register({
+      name: 'switchboard',
+      description: 'Show the agents of this session and the messages between them',
+      argumentHint: '[clear]',
     });
     await $.command.register({
       name: 'send',
@@ -245,33 +370,45 @@ export const register: Register = (on, options) => {
 
   // Agent tool subagents: route a generic subagent nobody picked a model for, or hand it to Codex.
   on('agent.spawn', async ($, e, next) => {
-    if (
-      e.fork ||
-      e.isTeammate ||
-      e.model !== undefined ||
-      !TRIAGED_TYPES.has(e.subagentType) ||
-      !(await read($, isTriageOn))
-    )
-      return next(e);
+    const { spawned, route } = await routeSpawn($, e, next);
+    // The agent has started: drawing it must not fail the spawn.
+    if (spawned.deny === undefined && spawned.agentId !== undefined)
+      await track($, {
+        id: spawned.agentId,
+        parentId: e.parentAgentId,
+        description: e.description,
+        type: route === 'codex' ? CODEX_AGENT : e.isTeammate ? 'teammate' : e.subagentType,
+        route,
+        model: spawned.model,
+        status: 'running',
+        at: await $.clock.now(),
+      }).catch(() => undefined);
+    return spawned;
+  });
 
-    const task = `${e.description}\n\n${e.prompt}`;
-    const picked = (await read($, isCodexOn)) ? await classify($, task, SPAWN_HINTS) : await classify($, task);
-    if (picked === null) return next(e);
-
-    if (picked === 'codex') {
-      // Codex's agent keeps its own model; the Agent prompt is already self-contained.
-      const handed = await next({ ...e, subagentType: CODEX_AGENT });
-      if (handed.deny === undefined) {
-        await count($, 'codex');
-        return handed;
-      }
-      // The codex plugin is not installed or refused: the work is substantial, so route it deep.
-      await count($, 'deep');
-      return next({ ...e, model: ROUTES.deep.model });
+  // An agent's turn ending is the end of a subagent's run; a teammate goes idle until its next message.
+  on('turn.complete', async ($, e, next) => {
+    const id = e.agentId;
+    if (id !== undefined && (await read($, agents)).some((a) => a.id === id)) {
+      await update($, agents, (all) =>
+        all.map((a): SwitchboardAgent =>
+          a.id !== id
+            ? a
+            : {
+                ...a,
+                status:
+                  e.reason === 'aborted'
+                    ? 'killed'
+                    : e.reason !== 'answer'
+                      ? 'failed'
+                      : a.type === 'teammate'
+                        ? 'idle'
+                        : 'completed',
+              }
+        )
+      );
     }
-
-    await count($, picked);
-    return next({ ...e, model: ROUTES[picked].model });
+    return next(e);
   });
 
   // Keep the agent's own task: its first user row as typed, not what the engine or a hook injects.
@@ -322,9 +459,16 @@ export const register: Register = (on, options) => {
   });
 
   // Agent to agent comms: keep an inbox of peer deliveries, and send with /send.
+  on('session.send', async ($, e, next) => {
+    const sent = await next(e);
+    if (sent.isDelivered) await record($, { from: e.agentId ?? MAIN, to: e.to, text: e.text }).catch(() => undefined);
+    return sent;
+  });
+
   on('session.receive', async ($, e, next) => {
     if (PEER_KINDS.has(e.origin.kind)) {
       const from = 'teammate' in e.origin ? e.origin.teammate : e.origin.kind;
+      await record($, { from, to: e.agentId ?? MAIN, text: e.text }, true).catch(() => undefined);
       const message: SwitchboardMessage = {
         from,
         text: e.text,
@@ -356,6 +500,19 @@ export const register: Register = (on, options) => {
     await update($, unread, () => 0);
     await $.ui.open({ id: INBOX, title: 'Inbox' });
     return { text: 'Inbox opened.' };
+  });
+
+  on('command.run', { command: 'switchboard' }, async ($, e) => {
+    const arg = e.args.trim();
+    if (arg === 'clear') {
+      await update($, agents, () => []);
+      await update($, wire, () => []);
+    } else if (arg !== '') return { text: 'Usage: /switchboard [clear]' };
+    await $.ui.open({ id: BOARD, title: 'Switchboard' });
+    const list = await read($, agents);
+    return {
+      text: `Switchboard opened: ${list.length} agent${list.length === 1 ? '' : 's'}, ${(await read($, wire)).length} messages.`,
+    };
   });
 
   on('command.run', { command: 'triage' }, async ($, e) => {
@@ -399,7 +556,15 @@ export const register: Register = (on, options) => {
             {(await read($, pinned)) ? ' (pinned)' : ''}
           </Text>
         )}
-        {tally.length > 0 && <Text dimColor>subagents: {tally.join(' · ')}</Text>}
+        {tally.length > 0 && (
+          <Button
+            key="board"
+            label={`subagents: ${tally.join(' · ')}`}
+            onPress={async () => {
+              await $.ui.open({ id: BOARD, title: 'Switchboard' });
+            }}
+          />
+        )}
         {count > 0 && (
           <Button
             key="inbox"
@@ -429,6 +594,76 @@ export const register: Register = (on, options) => {
               <Text>{m.text}</Text>
             </Box>
           ))}
+      </Box>
+    );
+  });
+
+  // The switchboard: main and every agent under it, then the wire between them, newest first.
+  on('ui.render', { component: 'Pane', requestId: BOARD }, async ($, e) => {
+    const { Box, Button, Text } = $.ui.resolve(e);
+    const now = await $.clock.now();
+    const width = Math.max(30, e.props.bodyColumns);
+    const live = new Map((await $.agent.list().catch(() => [])).map((a) => [a.id, a]));
+    const list = (await read($, agents)).map((a) => {
+      const status = live.get(a.id)?.status;
+      // The engine's word is fresher while the agent is listed; ours outlives the list.
+      return status === 'running' || status === 'idle' || status === 'completed' || status === 'failed' || status === 'killed'
+        ? { ...a, status }
+        : a;
+    });
+    const nameOf = (id: string) =>
+      id === MAIN ? MAIN : (live.get(id)?.name ?? list.find((a) => a.id === id)?.description ?? id);
+    const messages = (await read($, wire)).slice().reverse();
+    const picked = await read($, tier);
+    const mainModel = picked ? ROUTES[picked].model : await read($, sessionModel);
+    const running = list.filter((a) => a.status === 'running').length;
+
+    return (
+      <Box flexDirection="column">
+        <Text bold>
+          {list.length} agent{list.length === 1 ? '' : 's'} · {running} running · {messages.length} message
+          {messages.length === 1 ? '' : 's'}
+        </Text>
+        <Box flexDirection="column" marginTop={1}>
+          <Text>
+            <Text color="claude">◆</Text> <Text bold>{MAIN}</Text>
+            {picked !== null && <Text color={ROUTE_COLOR[picked]}> {picked}</Text>}
+            {mainModel !== null && <Text dimColor> → {shortModel(mainModel)}</Text>}
+          </Text>
+          {treeOf(list).map(({ agent, prefix }) => {
+            const { glyph, color } = STATUS[agent.status];
+            const meta = `${agent.route ?? agent.type} → ${shortModel(agent.model)} · ${ago(now - agent.at)}`;
+            return (
+              <Button
+                key={agent.id}
+                plain
+                onPress={async () => {
+                  await $.ui.view({ agentId: agent.id }).catch(() => undefined);
+                }}
+              >
+                <Text dimColor>{prefix}</Text>
+                <Text color={color}>{glyph}</Text> {clip(agent.description || agent.id, Math.max(10, width - prefix.length - meta.length - 4))}{' '}
+                <Text dimColor {...(agent.route !== null && { color: ROUTE_COLOR[agent.route] })}>
+                  {meta}
+                </Text>
+              </Button>
+            );
+          })}
+        </Box>
+        <Box flexDirection="column" marginTop={1}>
+          <Text bold>Wire</Text>
+          {messages.length === 0 && <Text dimColor>No messages yet. /send, SendMessage and peer sessions show here.</Text>}
+          {messages.map((m) => {
+            const head = `${ago(now - m.at).padStart(3)}  ${nameOf(m.from)} → ${nameOf(m.to)}  `;
+            return (
+              <Text>
+                <Text dimColor>{head}</Text>
+                {clip(m.text, Math.max(10, width - head.length))}
+              </Text>
+            );
+          })}
+        </Box>
+        {list.length > 0 && <Text dimColor>Press an agent to open its transcript · /switchboard clear</Text>}
       </Box>
     );
   });

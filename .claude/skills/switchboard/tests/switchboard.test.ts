@@ -161,14 +161,14 @@ test('without the codex agent a handover is routed deep instead', async ($, on) 
 test('/triage codex off keeps Codex out of the subagent choices', async ($, on) => {
   const seen: string[][] = [];
   on('model.classify', ($, e) => {
-    seen.push(e.labels);
+    seen.push([...e.labels]);
     return { value: 'standard: an ordinary coding task' };
   });
   on('agent.spawn', started);
   expect((await $.command.run(command('triage', 'codex off'))).text).toContain('Codex handover off');
   expect((await $.agent.spawn(spawn({}))).model).toBe(ROUTES.standard.model);
   expect(seen.length).toBe(1);
-  expect(seen[0].some((l) => l.startsWith('codex'))).toBe(false);
+  expect(seen[0]?.some((l) => l.startsWith('codex'))).toBe(false);
 });
 
 const submit = (kind: 'composer' | 'bridge' | 'sdk' | 'task-notification') => ({
@@ -188,4 +188,69 @@ test('a person prompt is triaged from the terminal, the Claude app or claude -p'
   expect(asked).toBe(3);
   await $.prompt.submit(submit('task-notification'));
   expect(asked).toBe(3);
+});
+
+const BOARD = {
+  plugin: 'switchboard',
+  component: 'Pane',
+  requestId: 'switchboard-board',
+  props: {
+    title: 'Switchboard',
+    isFocused: false,
+    bodyColumns: 100,
+    placement: 'dock',
+    scroll: { offset: 0, bodyRows: 30 },
+    view: {},
+  },
+} as const;
+
+const turnDone = (agentId: string) => ({
+  agentId,
+  answer: 'Done',
+  durationMs: 10,
+  isAborted: false,
+  turnId: 't1',
+  reason: 'answer' as const,
+});
+
+test('the switchboard draws spawned agents as a tree under main, with their route', async ($, on) => {
+  on('model.classify', () => ({ value: 'deep: architecture' }));
+  on('agent.spawn', ($, e) => ({ model: e.model ?? 'inherited', agentId: e.description === 'Lead' ? 'a1' : 'a2' }));
+  on('agent.list', () => ({ value: [] }));
+  on('clock.now', () => ({ value: 1_000 }));
+  on('turn.complete', () => ({ text: 'Done' }));
+  await $.agent.spawn(spawn({ description: 'Lead' }));
+  await $.agent.spawn(spawn({ description: 'Helper', parentAgentId: 'a1', subagentType: 'Explore' }));
+  await $.turn.complete(turnDone('a2'));
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ ...BOARD, surface });
+    expect((await ui.find({ type: 'Text', text: /2 agents · 1 running/ }))?.text).toContain('0 messages');
+    expect((await ui.find({ type: 'Button', text: /Lead/ }))?.text).toContain('deep → opus-5-5');
+    const helper = await ui.find({ type: 'Button', text: /Helper/ });
+    expect(helper?.text).toContain('└─ ✓');
+    expect(helper?.text).toContain('Explore → inherited');
+    await ui.unmount();
+  }
+});
+
+test('the wire keeps sends and peer messages once, newest first', async ($, on) => {
+  on('agent.list', () => ({ value: [] }));
+  on('clock.now', () => ({ value: 1_000 }));
+  on('session.send', () => ({ isDelivered: true }));
+  on('session.receive', () => ({ consumed: 'no' }));
+  on('ui.toast', () => ({ value: undefined }));
+  on('ui.open', () => ({ value: { isPlaced: true } }));
+  await $.session.send({ to: 'researcher', text: 'Look into the cache', origin: { kind: 'model' } });
+  // The same message arriving here again is an echo, not a second message.
+  await $.session.receive({ origin: { kind: 'peer' }, text: 'Look into the cache' });
+  await $.session.receive({ origin: { kind: 'peer', teammate: 'researcher', isVerified: true }, text: 'Found it' });
+
+  const ui = await $.ui.mount({ ...BOARD, surface: 'terminal' });
+  expect((await ui.find({ type: 'Text', text: /agents · / }))?.text).toContain('2 messages');
+  expect((await ui.find({ type: 'Text', text: /main → researcher/ }))?.text).toContain('Look into the cache');
+  expect((await ui.find({ type: 'Text', text: /researcher → main/ }))?.text).toContain('Found it');
+  await ui.unmount();
+
+  expect((await $.command.run(command('switchboard', 'clear'))).text).toContain('0 agents, 0 messages');
 });
