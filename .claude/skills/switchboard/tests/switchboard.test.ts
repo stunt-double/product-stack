@@ -254,3 +254,54 @@ test('the wire keeps sends and peer messages once, newest first', async ($, on) 
 
   expect((await $.command.run(command('switchboard', 'clear'))).text).toContain('0 agents, 0 messages');
 });
+
+const band = { plugin: 'switchboard', surface: 'terminal', component: 'AbovePrompt' } as const;
+const SCROLL = { offset: 0, bodyRows: 2 };
+const bandProps = (maxRows: number) => ({
+  hasSurvey: false,
+  isWorking: false,
+  maxRows,
+  bodyColumns: 120,
+  scroll: SCROLL,
+  view: {},
+});
+
+test('the band shows the route, its effort and who decided it', async ($, on) => {
+  on('model.classify', () => ({ value: 'deep: architecture' }));
+  on('prompt.submit', ($, e) => ({ text: e.text }));
+  await $.prompt.submit(submit('composer'));
+  const ui = await $.ui.mount({ ...band, props: bandProps(2) });
+  const drawn = JSON.stringify(await ui.drawn());
+  expect(drawn).toContain('deep');
+  expect(drawn).toContain('opus-5-5 high');
+  expect(drawn).toContain('haiku');
+});
+
+test('the band reports the last turn: time, tokens and cache hits', async ($, on) => {
+  on('turn.complete', ($, e) => ({ text: e.answer }));
+  await $.turn.complete({
+    answer: 'done',
+    durationMs: 34_000,
+    isAborted: false,
+    turnId: 't1',
+    reason: 'answer',
+    usage: {
+      model: 'claude-opus-5-5',
+      input_tokens: 1000,
+      cache_read_input_tokens: 9000,
+      cache_creation_input_tokens: 0,
+      output_tokens: 1200,
+    },
+  });
+  const ui = await $.ui.mount({ ...band, props: bandProps(2) });
+  const drawn = JSON.stringify(await ui.drawn());
+  expect(drawn).toContain('last turn 34s · 10.0k in (90% cached) · 1.2k out');
+  expect((await $.command.run(command('triage', ''))).text).toContain('on claude-opus-5-5');
+});
+
+test('a pinned tier is reported as decided by the pin', async ($, on) => {
+  on('prompt.submit', ($, e) => ({ text: e.text }));
+  await $.command.run(command('triage', 'ultra'));
+  await $.prompt.submit(submit('composer'));
+  expect((await $.command.run(command('triage', ''))).text).toContain('Last prompt: ultra → fable-5-1 max · pin');
+});
