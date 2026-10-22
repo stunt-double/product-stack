@@ -1,6 +1,6 @@
 {
   "name": "switchboard",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Peer session inbox and /send, a /switchboard pane showing agents and the messages between them, a status band above the prompt, per-prompt model triage decided by TypeSafe's Jev, and handover of generic subagents to Codex.",
   "types": "./types/index.d.ts",
   "userConfig": {
