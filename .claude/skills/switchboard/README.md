@@ -24,7 +24,13 @@ Repo settings (`enabledPlugins`, `extraKnownMarketplaces` in `.claude/settings.j
 
 - **Agent to agent comms**: messages from other sessions, teammates and agents are kept in an inbox (last 50) with a toast. `/inbox` opens them in a pane; `/send <to> <message>` sends one by the name `ListAgents` shows.
 - **Switchboard pane**: `/switchboard` opens a live view of the session's orchestration: `main` with its route, every subagent, teammate, workflow agent and Codex handover as a tree under the agent that spawned it (status, route → model, age; press one to open its transcript), and the wire, every message between main, its agents and peer sessions, newest first. `/switchboard clear` empties it.
-- **UI**: a band above the prompt shows the current route (`deep → claude-opus-5-5`) and a button for unread messages; the status line shows the tier. The subagent tally in the band opens the switchboard pane.
+- **UI**: a band above the prompt shows:
+  - the current route with its effort and what decided it (`deep → opus-5-5 high · jev 82%`, `· haiku` or `· pin`), with pinned routes in yellow;
+  - the last turn's time, tokens and prompt-cache hits (`last turn 34s · 10.0k in (90% cached) · 1.2k out`), so you can see the cost of switching models between turns;
+  - how many subagents went to each route, which opens the switchboard pane;
+  - a button for unread messages.
+
+  The status line shows the tier and what decided it, and `/triage` reports all of this as text. The inbox lists the newest message first, with how long ago it arrived.
 - **Model selection triage**: each prompt a person sends (typed at the terminal, from the Claude app, or through `claude -p` and the Agent SDK) is classified, by TypeSafe's [Jev](https://docs.typesafe.ai/models) when a TypeSafe API key is set and Jev is confident (Choice confidence 0.3 or more), else by Haiku, as quick, standard, deep, ultra or copywriting, and that turn's main-loop requests go to Haiku 5.5 (low effort), Opus (medium or high effort), Fable 5.1 (max for ultra, medium for copywriting). Every route has a 1M context window, so a quick turn late in a long conversation never overflows a smaller model and forces a compaction (Haiku 4.5, the old quick route, had 200K; Haiku 5.5 has 1M). `/triage on|off`, `/triage quick|standard|deep|ultra|copywriting` to pin the main loop, `/triage auto` to unpin.
 - **Subagents and workflows**: an Agent tool subagent of type `general-purpose` with no model given is routed by its task at spawn. Workflow agents (ultracode included) never pass `agent.spawn`, so their opening task is captured at `session.append` and they are routed on their first request. A model chosen explicitly (`Agent({ model })`, `agent(..., { model })`, a custom agent type's own model), a fork and a teammate are left alone. The band and `/triage` show how many subagents went to each tier.
 - **Codex handover**: the same spawn triage can choose `codex` for a large self-contained implementation, a second opinion on a risky design or a bug whose cause is still unclear; that subagent is started as `codex:codex-rescue` (the [openai-codex plugin](https://github.com/openai/codex-plugin-cc)'s forwarder) with the Agent tool's prompt, which is already self-contained. Without that plugin the spawn is routed deep instead. Workflow agents are never handed over: their type is fixed before switchboard sees them. `/triage codex off` turns the handover off, `/triage codex on` back on.
@@ -39,5 +45,7 @@ Triage decisions go to TypeSafe's Jev (`jev-latest`, through the vendored [JavaS
 - the `TYPESAFE_API_KEY` environment variable, read when no option is set.
 
 With neither, or when Jev errors or is unsure, Haiku decides as before. `/triage` says which one is deciding.
+
+For deliberate fan-out and Codex handoffs, see [orchestrator](../orchestrator).
 
 Check it with `claude plugin validate .claude/skills/switchboard` and `claude plugin test .claude/skills/switchboard`.

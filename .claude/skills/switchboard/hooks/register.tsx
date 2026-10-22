@@ -4,16 +4,20 @@ import { atom, read, update } from 'claude-code';
 import { choice, type Fetch, TypeSafeClient } from './vendor/typesafe-sdk.mjs';
 import type {
   SwitchboardAgent,
+  SwitchboardDecision,
   SwitchboardMessage,
   SwitchboardRoute,
   SwitchboardTier,
+  SwitchboardTurn,
   SwitchboardWire,
 } from '../types';
 
 const isTriageOn = atom({ plugin: 'switchboard', key: 'isTriageOn' } as const, true);
 const isCodexOn = atom({ plugin: 'switchboard', key: 'isCodexOn' } as const, true);
 const pinned = atom({ plugin: 'switchboard', key: 'pinned' } as const, null);
-const tier = atom({ plugin: 'switchboard', key: 'tier' } as const, null);
+// The main loop's route for the current turn, and who decided it.
+const decision = atom({ plugin: 'switchboard', key: 'decision' } as const, null);
+const lastTurn = atom({ plugin: 'switchboard', key: 'lastTurn' } as const, null);
 const inbox = atom({ plugin: 'switchboard', key: 'inbox' } as const, []);
 const unread = atom({ plugin: 'switchboard', key: 'unread' } as const, 0);
 const subagents = atom({ plugin: 'switchboard', key: 'subagents' } as const, {
@@ -127,7 +131,7 @@ async function jevChoice<T extends string>(
   $: EngineInterface,
   text: string,
   options: Record<T, string>
-): Promise<T | null> {
+): Promise<SwitchboardDecision<T> | null> {
   const apiKey = await typesafeKey($);
   if (apiKey === undefined) return null;
   try {
@@ -146,29 +150,56 @@ async function jevChoice<T extends string>(
         route: choice('Which option best describes the work the coding assistant must do for `request`?', options),
       },
     });
-    const { choice: picked, confidence } = answers.route;
-    return (confidence ?? 0) >= JEV_MIN_CONFIDENCE ? choiceOf(options, picked) : null;
+    const { choice: picked, confidence = 0 } = answers.route;
+    const route = confidence >= JEV_MIN_CONFIDENCE ? choiceOf(options, picked) : null;
+    return route === null ? null : { route, by: 'jev', confidence };
   } catch {
     return null;
   }
 }
 
-async function classify($: EngineInterface, text: string): Promise<SwitchboardTier | null>;
+async function classify($: EngineInterface, text: string): Promise<SwitchboardDecision | null>;
 async function classify<T extends string>(
   $: EngineInterface,
   text: string,
   options: Record<T, string>
-): Promise<T | null>;
-async function classify($: EngineInterface, text: string, options: Record<string, string> = HINTS) {
+): Promise<SwitchboardDecision<T> | null>;
+async function classify(
+  $: EngineInterface,
+  text: string,
+  options: Record<string, string> = HINTS
+): Promise<SwitchboardDecision<string> | null> {
   const labels = Object.entries(options).map(([k, hint]) => `${k}: ${hint}`);
   return (
     (await jevChoice($, text, options)) ??
     $.model
       .classify(text.slice(0, 4000), labels, { model: 'haiku' })
-      .then((label) => choiceOf(options, label))
+      .then((label) => {
+        const route = choiceOf(options, label);
+        return route === null ? null : { route, by: 'haiku' as const };
+      })
       .catch(() => null)
   );
 }
+
+// Display helpers for the band, the status line and /triage.
+const shortModel = (model: string) => model.replace(/^claude-/, '');
+const tokens = (n: number) =>
+  n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`;
+const seconds = (ms: number) =>
+  ms >= 60_000 ? `${Math.floor(ms / 60_000)}m${Math.floor((ms % 60_000) / 1000)}s` : `${Math.round(ms / 1000)}s`;
+const ago = (ms: number) =>
+  ms < 60_000 ? 'just now' : ms < 3_600_000 ? `${Math.floor(ms / 60_000)}m ago` : `${Math.floor(ms / 3_600_000)}h ago`;
+
+export const decidedBy = (d: SwitchboardDecision<string>) =>
+  d.by === 'jev' ? `jev ${Math.round((d.confidence ?? 0) * 100)}%` : d.by;
+
+export const routeLine = (d: SwitchboardDecision) =>
+  `${d.route} → ${shortModel(ROUTES[d.route].model)} ${ROUTES[d.route].effort} · ${decidedBy(d)}`;
+
+// Cache reads show whether a model switch between turns dropped the prompt cache.
+export const turnLine = (t: SwitchboardTurn) =>
+  `last turn ${seconds(t.durationMs)} · ${tokens(t.input)} in${t.input > 0 ? ` (${Math.round((t.cached / t.input) * 100)}% cached)` : ''} · ${tokens(t.output)} out`;
 
 async function count($: EngineInterface, picked: SwitchboardRoute) {
   // A tally kept from before a route existed lacks its key.
@@ -227,7 +258,7 @@ async function decideWorkflowAgent(
 
   let picked: SwitchboardTier | null = null;
   if (isWorkflowAgent && (await read($, isTriageOn))) {
-    picked = await classify($, task);
+    picked = (await classify($, task))?.route ?? null;
     if (picked !== null) await count($, picked);
   }
   await update($, agentTiers, (all) => ({ ...all, [step.agentId]: picked }));
@@ -261,12 +292,11 @@ const ROUTE_COLOR: Record<SwitchboardRoute, 'success' | 'suggestion' | 'permissi
   codex: 'warning',
 };
 
-const shortModel = (model: string) => model.replace(/^claude-/, '');
 const clip = (text: string, width: number) => {
   const line = text.replace(/\s+/g, ' ').trim();
   return line.length > width ? `${line.slice(0, Math.max(1, width - 1))}…` : line;
 };
-const ago = (ms: number) =>
+const elapsed = (ms: number) =>
   ms < 60_000 ? `${Math.max(0, Math.round(ms / 1000))}s` : ms < 3_600_000 ? `${Math.round(ms / 60_000)}m` : `${Math.round(ms / 3_600_000)}h`;
 
 // Depth-first under main; an agent whose parent is not tracked hangs off main.
@@ -307,8 +337,9 @@ async function routeSpawn(
     return { spawned: await next(e), route: null };
 
   const task = `${e.description}\n\n${e.prompt}`;
-  const picked = (await read($, isCodexOn)) ? await classify($, task, SPAWN_HINTS) : await classify($, task);
-  if (picked === null) return { spawned: await next(e), route: null };
+  const decided = (await read($, isCodexOn)) ? await classify($, task, SPAWN_HINTS) : await classify($, task);
+  if (decided === null) return { spawned: await next(e), route: null };
+  const picked = decided.route;
 
   if (picked === 'codex') {
     // Codex's agent keeps its own model; the Agent prompt is already self-contained.
@@ -358,12 +389,12 @@ export const register: Register = (on, options) => {
     if (!PERSON_KINDS.has(e.origin.kind) || e.text.startsWith('/')) return next(e);
 
     const pin = await read($, pinned);
-    let picked: SwitchboardTier | null = pin;
+    let decided: SwitchboardDecision | null = pin && { route: pin, by: 'pin' };
     if (pin === null && (await read($, isTriageOn))) {
-      picked = await classify($, e.text);
+      decided = await classify($, e.text);
     }
-    await update($, tier, () => picked);
-    $.ui.status(picked ? `triage: ${picked}` : undefined);
+    await update($, decision, () => decided);
+    $.ui.status(decided ? `triage: ${decided.route} · ${decidedBy(decided)}` : undefined);
 
     return next(e);
   });
@@ -386,8 +417,20 @@ export const register: Register = (on, options) => {
     return spawned;
   });
 
-  // An agent's turn ending is the end of a subagent's run; a teammate goes idle until its next message.
+  // A main turn is kept as the last turn; an agent's turn ending is the end of a subagent's run, and a teammate goes idle until its next message.
   on('turn.complete', async ($, e, next) => {
+    // The main loop's last turn: how long it took, what it cost and how much the prompt cache served.
+    if (e.agentId === undefined && e.usage !== undefined) {
+      const { model, input_tokens, cache_read_input_tokens, cache_creation_input_tokens, output_tokens } = e.usage;
+      const turn: SwitchboardTurn = {
+        model,
+        durationMs: e.durationMs,
+        input: input_tokens + cache_read_input_tokens + cache_creation_input_tokens,
+        cached: cache_read_input_tokens,
+        output: output_tokens,
+      };
+      await update($, lastTurn, () => turn);
+    }
     const id = e.agentId;
     if (id !== undefined && (await read($, agents)).some((a) => a.id === id)) {
       await update($, agents, (all) =>
@@ -433,25 +476,25 @@ export const register: Register = (on, options) => {
   on('turn.step', async function* ($, e, next) {
     if (e.agentId === undefined) {
       if ((await read($, sessionModel)) !== e.model) await update($, sessionModel, () => e.model);
-      const picked = await read($, tier);
-      if (picked === null) return yield* next(e);
+      const decided = await read($, decision);
+      if (decided === null) return yield* next(e);
 
-      const { model, effort } = ROUTES[picked];
+      const { model, effort } = ROUTES[decided.route];
       return yield* next({ ...e, model, effort });
     }
 
     const agentId = e.agentId;
-    let decision = deciding.get(agentId);
-    if (decision === undefined) {
-      decision = decideWorkflowAgent($, {
+    let pending = deciding.get(agentId);
+    if (pending === undefined) {
+      pending = decideWorkflowAgent($, {
         agentId,
         model: e.model,
         index: e.index,
         messageCount: e.messageCount,
       });
-      deciding.set(agentId, decision);
+      deciding.set(agentId, pending);
     }
-    const picked = await decision;
+    const picked = await pending;
     if (picked === null) return yield* next(e);
 
     // A subagent keeps the effort it was given.
@@ -526,55 +569,76 @@ export const register: Register = (on, options) => {
       return { text: 'Usage: /triage [on|off|auto|quick|standard|deep|ultra|copywriting|codex on|codex off]' };
 
     if (!(await read($, isTriageOn)) && (await read($, pinned)) === null) {
-      await update($, tier, () => null);
+      await update($, decision, () => null);
       $.ui.status(undefined);
     }
     const pin = await read($, pinned);
+    const last = await read($, decision);
+    const turn = await read($, lastTurn);
     const tally = tallyOf(await read($, subagents));
     const codex = (await read($, isCodexOn)) ? '' : ' Codex handover off.';
     const decider = (await typesafeKey($))
       ? ` Decided by ${JEV_MODEL}, Haiku when unsure.`
       : ' Decided by Haiku: set TYPESAFE_API_KEY or run `claude plugin configure switchboard` to decide with Jev.';
     return {
-      text: `Triage ${(await read($, isTriageOn)) ? 'on' : 'off'}${pin ? `, pinned to ${pin} (${ROUTES[pin].model})` : ''}.${decider}${codex}${tally.length ? ` Subagents routed: ${tally.join(', ')}.` : ''}`,
+      text: `Triage ${(await read($, isTriageOn)) ? 'on' : 'off'}${pin ? `, pinned to ${pin} (${ROUTES[pin].model})` : ''}.${decider}${codex}${last ? ` Last prompt: ${routeLine(last)}.` : ''}${turn ? ` ${turnLine(turn)} on ${turn.model}.` : ''}${tally.length ? ` Subagents routed: ${tally.join(', ')}.` : ''}`,
     };
   });
 
-  // UI: a band above the prompt with the route and unread messages.
+  // UI: a band above the prompt: the route and who chose it, the last turn's cost, subagents and unread messages.
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const picked = await read($, tier);
+    const decided = await read($, decision);
+    const turn = await read($, lastTurn);
     const count = await read($, unread);
     const tally = tallyOf(await read($, subagents));
-    if (e.props.hasSurvey || (picked === null && count === 0 && tally.length === 0)) return next(e);
+    const isOn = await read($, isTriageOn);
+    if (e.props.hasSurvey || (decided === null && turn === null && count === 0 && tally.length === 0)) return next(e);
 
     const { Box, Button, Text } = $.ui.resolve(e);
+    const inboxButton = count > 0 && (
+      <Button
+        key="inbox"
+        label={`${count} new message${count === 1 ? '' : 's'}`}
+        onPress={async () => {
+          await update($, unread, () => 0);
+          await $.ui.open({ id: INBOX, title: 'Inbox' });
+        }}
+      />
+    );
+    const route =
+      decided !== null ? (
+        <Text>
+          <Text color={decided.by === 'pin' ? 'yellow' : 'cyan'}>{decided.route}</Text>
+          <Text dimColor>{` → ${shortModel(ROUTES[decided.route].model)} ${ROUTES[decided.route].effort} · ${decidedBy(decided)}`}</Text>
+        </Text>
+      ) : (
+        <Text dimColor>{isOn ? 'triage on' : 'triage off'}</Text>
+      );
+
+    // One row when the band is held to one, else the route over the details.
+    if (e.props.maxRows < 2)
+      return (
+        <Box gap={2}>
+          {route}
+          {inboxButton}
+        </Box>
+      );
     return (
-      <Box gap={2}>
-        {picked !== null && (
-          <Text dimColor>
-            {picked} → {ROUTES[picked].model}
-            {(await read($, pinned)) ? ' (pinned)' : ''}
-          </Text>
-        )}
-        {tally.length > 0 && (
-          <Button
-            key="board"
-            label={`subagents: ${tally.join(' · ')}`}
-            onPress={async () => {
-              await $.ui.open({ id: BOARD, title: 'Switchboard' });
-            }}
-          />
-        )}
-        {count > 0 && (
-          <Button
-            key="inbox"
-            label={`${count} new message${count === 1 ? '' : 's'}`}
-            onPress={async () => {
-              await update($, unread, () => 0);
-              await $.ui.open({ id: INBOX, title: 'Inbox' });
-            }}
-          />
-        )}
+      <Box flexDirection="column">
+        <Box gap={2}>
+          {route}
+          {tally.length > 0 && (
+            <Button
+              key="board"
+              label={`subagents: ${tally.join(' · ')}`}
+              onPress={async () => {
+                await $.ui.open({ id: BOARD, title: 'Switchboard' });
+              }}
+            />
+          )}
+          {inboxButton}
+        </Box>
+        {turn && <Text dimColor>{turnLine(turn)}</Text>}
       </Box>
     );
   });
@@ -582,6 +646,7 @@ export const register: Register = (on, options) => {
   on('ui.render', { component: 'Pane', requestId: INBOX }, async ($, e) => {
     const { Box, Text } = $.ui.resolve(e);
     const list = await read($, inbox);
+    const now = await $.clock.now();
     return (
       <Box flexDirection="column">
         {list.length === 0 && <Text dimColor>No messages yet.</Text>}
@@ -590,10 +655,14 @@ export const register: Register = (on, options) => {
           .reverse()
           .map((m) => (
             <Box flexDirection="column" marginBottom={1}>
-              <Text bold>{m.from}</Text>
+              <Text>
+                <Text bold>{m.from}</Text>
+                <Text dimColor> · {ago(now - m.at)}</Text>
+              </Text>
               <Text>{m.text}</Text>
             </Box>
           ))}
+        {list.length > 0 && <Text dimColor>Reply with /send {'<to> <message>'}.</Text>}
       </Box>
     );
   });
@@ -614,7 +683,7 @@ export const register: Register = (on, options) => {
     const nameOf = (id: string) =>
       id === MAIN ? MAIN : (live.get(id)?.name ?? list.find((a) => a.id === id)?.description ?? id);
     const messages = (await read($, wire)).slice().reverse();
-    const picked = await read($, tier);
+    const picked = (await read($, decision))?.route ?? null;
     const mainModel = picked ? ROUTES[picked].model : await read($, sessionModel);
     const running = list.filter((a) => a.status === 'running').length;
 
@@ -632,7 +701,7 @@ export const register: Register = (on, options) => {
           </Text>
           {treeOf(list).map(({ agent, prefix }) => {
             const { glyph, color } = STATUS[agent.status];
-            const meta = `${agent.route ?? agent.type} → ${shortModel(agent.model)} · ${ago(now - agent.at)}`;
+            const meta = `${agent.route ?? agent.type} → ${shortModel(agent.model)} · ${elapsed(now - agent.at)}`;
             return (
               <Button
                 key={agent.id}
@@ -654,7 +723,7 @@ export const register: Register = (on, options) => {
           <Text bold>Wire</Text>
           {messages.length === 0 && <Text dimColor>No messages yet. /send, SendMessage and peer sessions show here.</Text>}
           {messages.map((m) => {
-            const head = `${ago(now - m.at).padStart(3)}  ${nameOf(m.from)} → ${nameOf(m.to)}  `;
+            const head = `${elapsed(now - m.at).padStart(3)}  ${nameOf(m.from)} → ${nameOf(m.to)}  `;
             return (
               <Text>
                 <Text dimColor>{head}</Text>

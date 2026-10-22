@@ -14,7 +14,20 @@ export type SwitchboardAgent = {
   at: number;
 };
 // One message on the wire: `main`, an agent's id, or a peer's name at either end.
-export type SwitchboardWire = { from: string; to: string; text: string; at: number };
+export type SwitchboardWire = { from: string; to: string; text: string; at: number };// Who picked a route: TypeSafe's Jev (with its Choice confidence), the Haiku classifier, or a /triage pin.
+export type SwitchboardDecision<T extends string = SwitchboardTier> = {
+  route: T;
+  by: 'jev' | 'haiku' | 'pin';
+  confidence?: number;
+};
+// The main loop's last finished turn, as its turn.complete reported it.
+export type SwitchboardTurn = {
+  model: string;
+  durationMs: number;
+  input: number;
+  cached: number;
+  output: number;
+};
 
 declare module 'claude-code' {
   interface PluginState {
@@ -22,7 +35,8 @@ declare module 'claude-code' {
       isTriageOn: boolean;
       isCodexOn: boolean;
       pinned: SwitchboardTier | null;
-      tier: SwitchboardTier | null;
+      decision: SwitchboardDecision | null;
+      lastTurn: SwitchboardTurn | null;
       inbox: SwitchboardMessage[];
       unread: number;
       subagents: Record<SwitchboardRoute, number>;
